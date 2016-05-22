@@ -6,7 +6,6 @@
         Destroyer       = 2,
         Cruiser         = 3,
         Battleship      = 4,
-        AircraftCarrier = 5
     }
 
     public static class ShipTypeExtensions

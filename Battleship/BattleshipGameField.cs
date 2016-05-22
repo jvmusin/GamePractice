@@ -3,14 +3,16 @@ using System.Linq;
 
 namespace Battleship
 {
-    public class BattleshipGameField : IGameField<Ship>
+    public class BattleshipGameField : IBattleshipGameField
     {
         public int Height => state.Length;
         public int Width => state[0].Length;
 
-        private readonly Ship[][] state;
+        private readonly IGameCell[][] state;
 
-        public Ship GetElementAt(int row, int column) => state[row][column];
+        public IGameCell GetElementAt(int row, int column) => state[row][column];
+
+        #region Constructors
 
         public BattleshipGameField(int height, int width)
         {
@@ -19,22 +21,22 @@ namespace Battleship
 
             state = Enumerable
                 .Range(0, height)
-                .Select(row => new Ship[width])
+                .Select(row => new IGameCell[width])
                 .ToArray();
         }
 
-        public BattleshipGameField(int height, int width, Func<int, int, Ship> getShip) : this(height, width)
+        public BattleshipGameField(int height, int width, Func<int, int, IGameCell> getCell) : this(height, width)
         {
             foreach (var position in this.EnumerateCellPositions())
             {
                 var row = position.Row;
                 var column = position.Column;
-                var ship = getShip(row, column);
+                var ship = getCell(row, column);
                 state[row][column] = ship;
             }
         }
 
-        public BattleshipGameField(IGameField<Ship> source) : this(source.Height, source.Width)
+        public BattleshipGameField(IBattleshipGameField source) : this(source.Height, source.Width)
         {
             foreach (var position in source.EnumerateCellPositions())
             {
@@ -43,54 +45,59 @@ namespace Battleship
                 state[row][column] = source.GetElementAt(row, column);
             }
         }
-
-        public bool IsAvailablePositionFor(ShipType shipType, int row, int column, bool vertical)
-        {
-            var deltas = GetDeltasToMovePointer(vertical);
-            var deltaRow = deltas.Item1;
-            var deltaColumn = deltas.Item2;
-            for (var i = 0; i < shipType.GetLength(); i++)
-            {
-                if (!this.IsOnField(row, column) || HasChildhoods(row, column))
-                    return false;
-                row += deltaRow;
-                column += deltaColumn;
-            }
-            return true;
-        }
-
-        private bool HasChildhoods(int row, int column)
-        {
-            for (var deltaRow = -1; deltaRow <= 1; deltaRow++)
-                for (var deltaColumn = -1; deltaColumn <= 1; deltaColumn++)
-                {
-                    if (deltaRow == 0 && deltaColumn == 0)
-                        continue;
-                    var nextRow = row + deltaRow;
-                    var nextColumn = column + deltaColumn;
-                    if (this.IsOnField(nextRow, nextColumn) && state[nextRow][nextColumn] != null)
-                        return true;
-                }
-            return false;
-        }
-
-        public BattleshipGameField Put(Ship ship, int row, int column, bool vertical)
+        #endregion
+        
+        public void Put(Ship ship, int row, int column, bool vertical)
         {
             if (!IsAvailablePositionFor(ship.Type, row, column, vertical))
                 throw new InvalidOperationException("Unavailable to put a ship here");
 
-            var newField = new BattleshipGameField(this);
             var deltas = GetDeltasToMovePointer(vertical);
             var deltaRow = deltas.Item1;
             var deltaColumn = deltas.Item2;
             for (var i = 0; i < ship.Type.GetLength(); i++)
             {
-                newField.state[row][column] = ship;
-                row += deltaRow;
-                column += deltaColumn;
+                var curRow = row + deltaRow * i;
+                var curColumn = column + deltaColumn * i;
+                state[curRow][curColumn] = ship.GetPiece(i);
             }
+        }
 
-            return newField;
+        public bool Shoot(int row, int column)
+        {
+            var cell = state[row][column];
+            if (cell.Damaged)
+                return false;
+
+            cell.Damaged = true;
+            foreach (var neighbour in this.GetDiagonalNeighbours(row, column).Select(pos => this.GetElementAt(pos)))
+                neighbour.Damaged = true;
+            return true;
+        }
+
+        public bool IsAvailablePositionFor(ShipType type, int row, int column, bool vertical)
+        {
+            if (GetElementAt(row, column) is ShipCell)
+                return false;
+
+            var deltas = GetDeltasToMovePointer(vertical);
+            var deltaRow = deltas.Item1;
+            var deltaColumn = deltas.Item2;
+            for (var i = 0; i < type.GetLength(); i++)
+            {
+                var nextRow = row + deltaRow * i;
+                var nextColumn = column + deltaColumn * i;
+                if (!this.IsOnField(nextRow, nextColumn) || HasNeighbours(nextRow, nextColumn))
+                    return false;
+            }
+            return true;
+        }
+
+        private bool HasNeighbours(int row, int column)
+        {
+            return this.Get8Neighbours(row, column)
+                .Select(position => this.GetElementAt(position))
+                .Any(x => x is ShipCell);
         }
 
         private static Tuple<int, int> GetDeltasToMovePointer(bool vertical)
@@ -103,26 +110,30 @@ namespace Battleship
         public override string ToString()
         {
             var rows = Enumerable.Range(0, Height)
-                .Select(row => string.Join("", this.GetRow(row).Select(ship => ship.Id)));
+                .Select(row => string.Join("", this.GetRow(row)));
             return string.Join("\n", rows);
         }
 
         #region Equals and HashCode
 
-        protected bool Equals(IGameField<Ship> other)
+        protected bool Equals(IBattleshipGameField other)
         {
             if (Height != other.Height || Width != other.Width)
                 return false;
 
-            var haveDifferentCells = other.EnumerateCellPositions()
-                .Any(pos => !this.GetElementAt(pos).Equals(other.GetElementAt(pos)));
-
-            return !haveDifferentCells;
+            return other.EnumerateCellPositions()
+                .All(position =>
+                {
+                    var currentCell = this.GetElementAt(position);
+                    var otherCell = other.GetElementAt(position);
+                    if (currentCell.GetType() != otherCell.GetType()) return false;
+                    return currentCell.Damaged == otherCell.Damaged;
+                });
         }
 
         public override bool Equals(object obj)
         {
-            var other = obj as IGameField<int>;
+            var other = obj as IBattleshipGameField;
             return other != null && Equals(other);
         }
 

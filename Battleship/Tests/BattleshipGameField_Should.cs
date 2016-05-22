@@ -9,13 +9,13 @@ namespace Battleship.Tests
     public class BattleshipGameField_Should : TestBase
     {
         private BattleshipGameField field;
-        private Func<int, int, Ship> byRowNumerator;
+        private Func<int, int, IGameCell> byRowNumerator;
 
         [SetUp]
         public void SetUp()
         {
             field = new BattleshipGameField(10, 15);
-            byRowNumerator = (row, column) => new Ship(ShipType.Submarine, row * field.Width + column);
+            byRowNumerator = (row, column) => new ShipCell();
         }
 
         [Test]
@@ -92,30 +92,36 @@ namespace Battleship.Tests
         [Test]
         public void LetMePutAHorizontalLongShipOnTheField()
         {
-            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 3, 10, false);
+            field.IsAvailablePositionFor(ShipType.Battleship, 3, 11, false);
         }
 
         [Test]
         public void LetMePutAVerticalLongShipOnTheField()
         {
-            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 5, 10, true);
+            field.IsAvailablePositionFor(ShipType.Battleship, 5, 11, true);
         }
 
         [Test]
         public void NotLetMePutTwoShips_CrossingOneByAnother()
         {
-            var ship = new Ship(ShipType.AircraftCarrier, 0);
-            field = field.Put(ship, 3, 3, false);
-            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 2, 4, true).Should().BeFalse();
+            var ship = new Ship(ShipType.Battleship);
+            field.Put(ship, 3, 3, false);
+            field.IsAvailablePositionFor(ShipType.Battleship, 2, 4, true).Should().BeFalse();
         }
 
         [Test]
         public void NotLetMePutTwoShips_WhenFirstTouchesSecond()
         {
-            var ship1 = new Ship(ShipType.Battleship, 0);
-            var ship2 = new Ship(ShipType.Battleship, 1);
-            field = field.Put(ship1, 0, 0, true);
+            var ship1 = new Ship(ShipType.Battleship);
+            var ship2 = new Ship(ShipType.Battleship);
+            field.Put(ship1, 0, 0, true);
             field.IsAvailablePositionFor(ship2.Type, 4, 1, true).Should().BeFalse();
+        }
+
+        [Test]
+        public void NotLetMePutAShip_IfItDoesntFit()
+        {
+            field.IsAvailablePositionFor(ShipType.Battleship, 9, 11, true).Should().BeFalse();
         }
     }
 }
