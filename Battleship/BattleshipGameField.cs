@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using SudokuSolver;
 
 namespace Battleship
 {
@@ -12,13 +11,6 @@ namespace Battleship
         private readonly Ship[][] state;
 
         public Ship GetElementAt(int row, int column) => state[row][column];
-
-        public IGameField<Ship> SetElementAt(int row, int column, Ship value)
-        {
-            var result = new BattleshipGameField(this);
-            result.state[row][column] = value;
-            return result;
-        }
 
         public BattleshipGameField(int height, int width)
         {
@@ -54,16 +46,58 @@ namespace Battleship
 
         public bool IsAvailablePositionFor(ShipType shipType, int row, int column, bool vertical)
         {
-            var deltaRow = vertical ? 1 : 0;
-            var deltaColumn = vertical ? 0 : 1;
+            var deltas = GetDeltasToMovePointer(vertical);
+            var deltaRow = deltas.Item1;
+            var deltaColumn = deltas.Item2;
             for (var i = 0; i < shipType.GetLength(); i++)
             {
+                if (!this.IsOnField(row, column) || HasChildhoods(row, column))
+                    return false;
                 row += deltaRow;
                 column += deltaColumn;
-                if (!this.IsOnField(row, column) || state[row][column] != null)
-                    return false;
             }
             return true;
+        }
+
+        private bool HasChildhoods(int row, int column)
+        {
+            for (var deltaRow = -1; deltaRow <= 1; deltaRow++)
+                for (var deltaColumn = -1; deltaColumn <= 1; deltaColumn++)
+                {
+                    if (deltaRow == 0 && deltaColumn == 0)
+                        continue;
+                    var nextRow = row + deltaRow;
+                    var nextColumn = column + deltaColumn;
+                    if (this.IsOnField(nextRow, nextColumn) && state[nextRow][nextColumn] != null)
+                        return true;
+                }
+            return false;
+        }
+
+        public BattleshipGameField Put(Ship ship, int row, int column, bool vertical)
+        {
+            if (!IsAvailablePositionFor(ship.Type, row, column, vertical))
+                throw new InvalidOperationException("Unavailable to put a ship here");
+
+            var newField = new BattleshipGameField(this);
+            var deltas = GetDeltasToMovePointer(vertical);
+            var deltaRow = deltas.Item1;
+            var deltaColumn = deltas.Item2;
+            for (var i = 0; i < ship.Type.GetLength(); i++)
+            {
+                newField.state[row][column] = ship;
+                row += deltaRow;
+                column += deltaColumn;
+            }
+
+            return newField;
+        }
+
+        private static Tuple<int, int> GetDeltasToMovePointer(bool vertical)
+        {
+            return vertical
+                ? Tuple.Create(1, 0)
+                : Tuple.Create(0, 1);
         }
 
         public override string ToString()

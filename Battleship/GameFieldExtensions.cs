@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SudokuSolver
+namespace Battleship
 {
     public static class GameFieldExtensions
     {
-        public static IGameField<T> Fill<T>(this IGameField<T> field, Func<int, int, T> getNumber)
-        {
-            foreach (var position in field.EnumerateCellPositions())
-            {
-                var row = position.Row;
-                var column = position.Column;
-                var number = getNumber(row, column);
-                field = field.SetElementAt(row, column, number);
-            }
-            return field;
-        }
-
         public static IEnumerable<CellPosition> EnumerateCellPositions<T>(this IGameField<T> field)
         {
             return
@@ -29,11 +16,6 @@ namespace SudokuSolver
         public static T GetElementAt<T>(this IGameField<T> field, CellPosition position)
         {
             return field.GetElementAt(position.Row, position.Column);
-        }
-        
-        public static IGameField<T> SetElementAt<T>(this IGameField<T> field, CellPosition position, T value)
-        {
-            return field.SetElementAt(position.Row, position.Column, value);
         }
 
         public static IEnumerable<T> GetRow<T>(this IGameField<T> field, int row)

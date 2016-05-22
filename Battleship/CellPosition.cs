@@ -1,4 +1,4 @@
-﻿namespace SudokuSolver
+﻿namespace Battleship
 {
     public class CellPosition
     {

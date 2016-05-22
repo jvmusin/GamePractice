@@ -2,21 +2,20 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SudokuSolver;
 
 namespace Battleship.Tests
 {
     [TestFixture]
     public class BattleshipGameField_Should : TestBase
     {
-        private IGameField<Ship> field;
+        private BattleshipGameField field;
         private Func<int, int, Ship> byRowNumerator;
 
         [SetUp]
         public void SetUp()
         {
-            field = new BattleshipGameField(5, 6);
-            byRowNumerator = (row, column) => new Ship(ShipType.Submarine, row*field.Width + column);
+            field = new BattleshipGameField(10, 15);
+            byRowNumerator = (row, column) => new Ship(ShipType.Submarine, row * field.Width + column);
         }
 
         [Test]
@@ -44,7 +43,7 @@ namespace Battleship.Tests
         [Test]
         public void RememberCellValuesCorrectly()
         {
-            field = (BattleshipGameField) field.Fill(byRowNumerator);
+            field = new BattleshipGameField(10, 15, byRowNumerator);
 
             foreach (var position in field.EnumerateCellPositions())
             {
@@ -57,7 +56,7 @@ namespace Battleship.Tests
         [Test]
         public void ReturnRealValuesOnGetRow()
         {
-            field = (BattleshipGameField) field.Fill(byRowNumerator);
+            field = new BattleshipGameField(10, 15, byRowNumerator);
 
             foreach (var row in Enumerable.Range(0, field.Height))
             {
@@ -71,7 +70,7 @@ namespace Battleship.Tests
         [Test]
         public void ReturnRealValuesOnGetColumn()
         {
-            field = (BattleshipGameField) field.Fill(byRowNumerator);
+            field = new BattleshipGameField(10, 15, byRowNumerator);
 
             foreach (var column in Enumerable.Range(0, field.Width))
             {
@@ -91,9 +90,32 @@ namespace Battleship.Tests
         }
 
         [Test]
-        public void ReturnBattleshipGameFieldClass_OnSetElementAtMethod()
+        public void LetMePutAHorizontalLongShipOnTheField()
         {
-            field.SetElementAt(0, 0, null).GetType().Should().Be<BattleshipGameField>();
+            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 3, 10, false);
+        }
+
+        [Test]
+        public void LetMePutAVerticalLongShipOnTheField()
+        {
+            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 5, 10, true);
+        }
+
+        [Test]
+        public void NotLetMePutTwoShips_CrossingOneByAnother()
+        {
+            var ship = new Ship(ShipType.AircraftCarrier, 0);
+            field = field.Put(ship, 3, 3, false);
+            field.IsAvailablePositionFor(ShipType.AircraftCarrier, 2, 4, true).Should().BeFalse();
+        }
+
+        [Test]
+        public void NotLetMePutTwoShips_WhenFirstTouchesSecond()
+        {
+            var ship1 = new Ship(ShipType.Battleship, 0);
+            var ship2 = new Ship(ShipType.Battleship, 1);
+            field = field.Put(ship1, 0, 0, true);
+            field.IsAvailablePositionFor(ship2.Type, 4, 1, true).Should().BeFalse();
         }
     }
 }
