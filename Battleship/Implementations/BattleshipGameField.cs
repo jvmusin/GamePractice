@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Battleship.Interfaces;
+using Battleship.Utilities;
 
-namespace Battleship
+namespace Battleship.Implementations
 {
     public class BattleshipGameField : IBattleshipGameField
     {
@@ -21,7 +23,10 @@ namespace Battleship
 
             state = Enumerable
                 .Range(0, height)
-                .Select(row => new IGameCell[width])
+                .Select(row =>
+                    Enumerable.Range(0, width)
+                        .Select(i => (IGameCell) new GameCell(CellType.Empty))
+                        .ToArray())
                 .ToArray();
         }
 
@@ -32,6 +37,8 @@ namespace Battleship
                 var row = position.Row;
                 var column = position.Column;
                 var ship = getCell(row, column);
+                if (ship == null)
+                    throw new NullReferenceException("Ship can't be null");
                 state[row][column] = ship;
             }
         }
@@ -45,6 +52,7 @@ namespace Battleship
                 state[row][column] = source.GetElementAt(row, column);
             }
         }
+
         #endregion
         
         public void Put(Ship ship, int row, int column, bool vertical)
@@ -65,19 +73,25 @@ namespace Battleship
 
         public bool Shoot(int row, int column)
         {
+            if (!this.IsOnField(row, column))
+                return false;
+
             var cell = state[row][column];
             if (cell.Damaged)
                 return false;
 
             cell.Damaged = true;
-            foreach (var neighbour in this.GetDiagonalNeighbours(row, column).Select(pos => this.GetElementAt(pos)))
+            var diagonalNeighbours = this
+                .GetDiagonalNeighbours(row, column)
+                .Select(position => this.GetElementAt(position));
+            foreach (var neighbour in diagonalNeighbours)
                 neighbour.Damaged = true;
             return true;
         }
 
         public bool IsAvailablePositionFor(ShipType type, int row, int column, bool vertical)
         {
-            if (GetElementAt(row, column) is ShipCell)
+            if (!this.IsOnField(row, column) || GetElementAt(row, column).Type == CellType.Ship)
                 return false;
 
             var deltas = GetDeltasToMovePointer(vertical);
@@ -85,9 +99,9 @@ namespace Battleship
             var deltaColumn = deltas.Item2;
             for (var i = 0; i < type.GetLength(); i++)
             {
-                var nextRow = row + deltaRow * i;
-                var nextColumn = column + deltaColumn * i;
-                if (!this.IsOnField(nextRow, nextColumn) || HasNeighbours(nextRow, nextColumn))
+                var curRow = row + deltaRow * i;
+                var curColumn = column + deltaColumn * i;
+                if (!this.IsOnField(curRow, curColumn) || HasNeighbours(curRow, curColumn))
                     return false;
             }
             return true;
@@ -97,7 +111,7 @@ namespace Battleship
         {
             return this.Get8Neighbours(row, column)
                 .Select(position => this.GetElementAt(position))
-                .Any(x => x is ShipCell);
+                .Any(x => x.Type == CellType.Ship);
         }
 
         private static Tuple<int, int> GetDeltasToMovePointer(bool vertical)

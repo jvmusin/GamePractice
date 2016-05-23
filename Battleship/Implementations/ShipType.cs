@@ -1,4 +1,4 @@
-﻿namespace Battleship
+﻿namespace Battleship.Implementations
 {
     public enum ShipType
     {

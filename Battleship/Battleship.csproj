@@ -63,18 +63,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BattleshipGameField.cs" />
-    <Compile Include="CellPosition.cs" />
-    <Compile Include="EmptyCell.cs" />
-    <Compile Include="IGameCell.cs" />
-    <Compile Include="GameFieldExtensions.cs" />
-    <Compile Include="IBattleshipGameField.cs" />
-    <Compile Include="IRectangleReadonlyField.cs" />
+    <Compile Include="Implementations\BattleshipGameField.cs" />
+    <Compile Include="Implementations\CellType.cs" />
+    <Compile Include="Utilities\RectangleReadonlyFieldExtensions.cs" />
+    <Compile Include="Utilities\BattleshipGameFieldExtensions.cs" />
+    <Compile Include="Interfaces\IShip.cs" />
+    <Compile Include="Utilities\CellPosition.cs" />
+    <Compile Include="Interfaces\IGameCell.cs" />
+    <Compile Include="Interfaces\IBattleshipGameField.cs" />
+    <Compile Include="Interfaces\IRectangleReadonlyField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ship.cs" />
-    <Compile Include="ShipCell.cs" />
-    <Compile Include="ShipType.cs" />
+    <Compile Include="Implementations\Ship.cs" />
+    <Compile Include="Implementations\GameCell.cs" />
+    <Compile Include="Implementations\ShipType.cs" />
     <Compile Include="Tests\BattleshipGameField_Should.cs" />
     <Compile Include="Tests\TestBase.cs" />
   </ItemGroup>

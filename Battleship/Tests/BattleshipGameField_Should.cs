@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Linq;
+using Battleship.Implementations;
+using Battleship.Interfaces;
+using Battleship.Utilities;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -15,7 +18,7 @@ namespace Battleship.Tests
         public void SetUp()
         {
             field = new BattleshipGameField(10, 15);
-            byRowNumerator = (row, column) => new ShipCell();
+            byRowNumerator = (row, column) => new GameCell(CellType.Empty);
         }
 
         [Test]
@@ -82,11 +85,11 @@ namespace Battleship.Tests
         }
 
         [Test]
-        public void HaveNullValues_ByDefault()
+        public void BeEmptyEverywhere_ByDefault()
         {
             Enumerable.Range(0, field.Height)
                 .SelectMany(row => field.GetRow(row))
-                .ShouldAllBeEquivalentTo((Ship) null);
+                .ShouldAllBeEquivalentTo(new GameCell(CellType.Empty));
         }
 
         [Test]

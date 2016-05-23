@@ -1,4 +1,4 @@
-﻿namespace Battleship
+﻿namespace Battleship.Utilities
 {
     public class CellPosition
     {

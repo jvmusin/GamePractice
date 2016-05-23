@@ -1,4 +1,6 @@
-﻿namespace Battleship
+﻿using Battleship.Implementations;
+
+namespace Battleship.Interfaces
 {
     public interface IShip
     {
@@ -8,6 +10,6 @@
         int Health { get; }
         bool Killed { get; }
 
-        ShipCell GetPiece(int index);
+        IGameCell GetPiece(int index);
     }
 }
