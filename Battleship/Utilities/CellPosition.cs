@@ -1,4 +1,7 @@
-﻿namespace Battleship.Utilities
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Battleship.Utilities
 {
     public class CellPosition
     {
@@ -10,6 +13,26 @@
             Row = row;
             Column = column;
         }
+
+        private IEnumerable<CellPosition> GetNeighbours(params int[] deltas)
+        {
+            return
+                from deltaRow in deltas
+                from deltaColumn in deltas
+                select new CellPosition(Row + deltaRow, Column + deltaColumn);
+        }
+
+        private IEnumerable<CellPosition> GetNeighbours(int[] deltasByRow, int[] deltasByColumn)
+        {
+            for (var i = 0; i < deltasByRow.Length; i++)
+                yield return new CellPosition(
+                    Row + deltasByRow[i], 
+                    Column + deltasByColumn[i]);
+        }
+
+        public IEnumerable<CellPosition> AllNeighbours => GetNeighbours(-1, 0, 1).Where(x => !x.Equals(this));
+        public IEnumerable<CellPosition> ByAngleNeighbours => GetNeighbours(-1, 1);
+        public IEnumerable<CellPosition> ByEdgeNeighbours => GetNeighbours(new[] {-1, 0, 1, 0}, new[] {0, 1, 0, -1});
 
         protected bool Equals(CellPosition other)
         {

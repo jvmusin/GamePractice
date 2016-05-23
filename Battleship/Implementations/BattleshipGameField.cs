@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Battleship.Interfaces;
 using Battleship.Utilities;
@@ -80,6 +81,7 @@ namespace Battleship.Implementations
             if (cell.Damaged)
                 return false;
 
+            //  Only when we hitted a ship
             cell.Damaged = true;
             var diagonalNeighbours = this
                 .GetDiagonalNeighbours(row, column)

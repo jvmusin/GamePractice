@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using Battleship.Implementations;
 
 namespace Battleship.Interfaces
@@ -6,6 +6,6 @@ namespace Battleship.Interfaces
     public interface IBattleshipGameField : IRectangleReadonlyField<IGameCell>
     {
         bool Shoot(int row, int column);
-        ImmutableDictionary<ShipType, int> GetSurvivedShips();
+        IReadOnlyDictionary<ShipType, int> GetSurvivedShips();
     }
 }
