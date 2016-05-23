@@ -4,7 +4,7 @@
     {
         IBattleshipGameField GetPlayerGameField();
         IBattleshipGameField GetEnemyGameField();
-        bool IsPlayersTurn { get; }
+        bool PlayerTurns { get; }
         bool MakeTurn(ITurn turn);
         bool IsOver { get; }
     }
