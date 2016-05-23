@@ -36,10 +36,10 @@ namespace Battleship.Implementations
             {
                 var row = position.Row;
                 var column = position.Column;
-                var ship = getCell(row, column);
-                if (ship == null)
+                var cell = getCell(row, column);
+                if (cell == null)
                     throw new NullReferenceException("Ship can't be null");
-                state[row][column] = ship;
+                state[row][column] = cell;
             }
         }
 
