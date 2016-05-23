@@ -34,7 +34,7 @@ namespace Battleship.Implementations
             if (!IsPositionValid(position))
                 return false;
 
-            //TODO Add checking position
+            //TODO Add checking position and changing shipsCounter state
 
             this[position] = true;
             return true;
@@ -44,6 +44,9 @@ namespace Battleship.Implementations
         {
             if (!IsOnField(position) || !this[position])
                 return false;
+
+            //TODO Add checking position and changing shipsCounter state
+
             this[position] = false;
             return true;
         }
