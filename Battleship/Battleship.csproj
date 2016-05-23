@@ -70,7 +70,7 @@
     <Compile Include="Implementations\BattleshipGameField.cs" />
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Interfaces\IBattleshipGame.cs" />
-    <Compile Include="Interfaces\IGameFieldCreater.cs" />
+    <Compile Include="Interfaces\IGameFieldBuilder.cs" />
     <Compile Include="Interfaces\ITurn.cs" />
     <Compile Include="Utilities\RectangleReadonlyFieldExtensions.cs" />
     <Compile Include="Utilities\BattleshipGameFieldExtensions.cs" />
