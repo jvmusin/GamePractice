@@ -69,6 +69,7 @@
     <Compile Include="IGameCell.cs" />
     <Compile Include="GameFieldExtensions.cs" />
     <Compile Include="IBattleshipGameField.cs" />
+    <Compile Include="IRectangleReadonlyField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ship.cs" />

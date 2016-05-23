@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Battleship
 {
-    public class Ship
+    public class Ship : IShip
     {
         public ShipType Type { get; }
         public int Length => Type.GetLength();
