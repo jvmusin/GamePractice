@@ -18,7 +18,7 @@ namespace Battleship.Implementations
 
         #region Constructors
 
-        public GameField(GameRules rules)
+        internal GameField(GameRules rules)
         {
             Rules = rules;
             survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
@@ -28,14 +28,14 @@ namespace Battleship.Implementations
                 this[position] = new EmptyCell(position);
         }
 
-        public GameField(GameRules rules, Func<CellPosition, IGameCell> getCell) : this(rules)
+        internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell) : this(rules)
         {
             foreach (var position in this.EnumerateCellPositions())
                 if ((this[position] = getCell(position)) == null)
                     throw new NullReferenceException("Ship can't be null");
         }
 
-        public GameField(IGameField source) : this(source.Rules)
+        internal GameField(IGameField source) : this(source.Rules)
         {
             foreach (var position in source.EnumerateCellPositions())
                 this[position] = source[position];

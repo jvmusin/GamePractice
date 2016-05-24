@@ -19,10 +19,10 @@ namespace Battleship.Implementations
                 throw new ArgumentOutOfRangeException(nameof(fieldSize));
 
             FieldSize = fieldSize;
-            ShipsCount = AddMissingKeys(shipsCount);
+            ShipsCount = AddMissingTypes(shipsCount);
         }
 
-        private static IReadOnlyDictionary<ShipType, int> AddMissingKeys(IReadOnlyDictionary<ShipType, int> counter)
+        private static IReadOnlyDictionary<ShipType, int> AddMissingTypes(IReadOnlyDictionary<ShipType, int> counter)
         {
             var missedTypes = Enum.GetValues(typeof (ShipType))
                 .Cast<ShipType>()
