@@ -9,8 +9,8 @@ namespace Battleship.Implementations
 {
     public class GameFieldBuilder
     {
-        public Size Size { get; }
         public GameRules Rules { get; }
+        public Size FieldSize => Rules.FieldSize;
 
         private readonly bool[,] field;
         private readonly Dictionary<ShipType, int> shipsLeft;
@@ -20,8 +20,7 @@ namespace Battleship.Implementations
         public GameFieldBuilder(GameRules rules)
         {
             Rules = rules;
-            Size = rules.FieldSize;
-            field = new bool[Size.Height, Size.Width];
+            field = new bool[FieldSize.Height, FieldSize.Width];
             shipsLeft = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
         }
 
@@ -115,19 +114,19 @@ namespace Battleship.Implementations
             if (ShipsLeft.Values.Any(x => x > 0))
                 throw new InvalidOperationException("Field isn't filled yet");
 
-            var newField = new IGameCell[Size.Height, Size.Width];
-            foreach (var row in Enumerable.Range(0, Size.Height))
-                foreach (var column in Enumerable.Range(0, Size.Width))
+            var newField = new IGameCell[FieldSize.Height, FieldSize.Width];
+            foreach (var row in Enumerable.Range(0, FieldSize.Height))
+                foreach (var column in Enumerable.Range(0, FieldSize.Width))
                 {
-                    var curCell = new CellPosition(row, column);
-                    if (!this[curCell])
+                    if (newField[row, column] != null)
                         continue;
 
-                    var topCell = new CellPosition(row - 1, column);
-                    var leftCell = new CellPosition(row, column - 1);
-                    var prevCells = new[] {topCell, leftCell};
-                    if (prevCells.Any(cell => IsOnField(cell) && this[cell]))
+                    var curCell = new CellPosition(row, column);
+                    if (!this[curCell])
+                    {
+                        newField[row, column] = new EmptyCell(curCell);
                         continue;
+                    }
                     
                     var curShip = new Ship(EnumerateShipCells(curCell));
                     foreach (var piece in curShip.Pieces)
@@ -137,7 +136,7 @@ namespace Battleship.Implementations
                     }
                 }
 
-            return new GameField(GameRules.Default,
+            return new GameField(Rules,
                 position => newField[position.Row, position.Column]);
         }
 
@@ -160,13 +159,13 @@ namespace Battleship.Implementations
         private bool IsOnField(CellPosition position)
         {
             return
-                position.Row.IsInRange(0, Size.Height) &&
-                position.Column.IsInRange(0, Size.Width);
+                position.Row.IsInRange(0, FieldSize.Height) &&
+                position.Column.IsInRange(0, FieldSize.Width);
         }
 
-        private bool this[CellPosition position] {
+        public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }
-            set { field[position.Row, position.Column] = value; }
+            private set { field[position.Row, position.Column] = value; }
         }
     }
 }
