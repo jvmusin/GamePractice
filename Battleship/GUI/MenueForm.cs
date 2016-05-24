@@ -6,31 +6,32 @@ namespace Battleship.GUI
 {
     public class MenueForm : Form
     {
-        private const int ButtonsCount = 3;
+        private const int ButtonsCount = 1;
+        private const int SideFill =100;
 
         public MenueForm()
         {
             StartPosition = FormStartPosition.CenterScreen;
 
+            var startButton = new Button
+            {
+                Text = "Start new game",
+                Dock = DockStyle.Fill
+            };
+            startButton.Click += CreateBattleshipFiled;
+
             var table = new TableLayoutPanel();
 
-            const int columnCount = 3;
-            for (var i = 0; i < columnCount; i++)
-            {
-                table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / columnCount));
-            }
+            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            table.RowStyles.Add(new RowStyle(SizeType.Absolute, SideFill));
+            table.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            table.RowStyles.Add(new RowStyle(SizeType.Absolute, SideFill));
+            
+            table.Controls.Add(new Panel(), 0, 0);
+            table.Controls.Add(startButton, 0, 1);
+            table.Controls.Add(new Panel(), 0, 2);
 
-            for (var i = 0; i < ButtonsCount + 2; i++)
-            {
-                table.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / ButtonsCount));
-            }
-
-            var button = new Button { Text = "Start new game" };
-            button.Dock = DockStyle.Fill;
-            button.Click += CreateBattleshipFiled;
-            table.Controls.Add(button, 1, 1);
-
-            table.Dock = DockStyle.None;
+            table.Dock = DockStyle.Fill;
             Controls.Add(table);
         }
 
