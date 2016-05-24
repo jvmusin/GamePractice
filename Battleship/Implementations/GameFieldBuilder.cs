@@ -75,36 +75,19 @@ namespace Battleship.Implementations
                 return true;
             }
 
-            if (connectedShips.Count == 1)
-            {
-                var newShip = connectedShips[0];
-                if (shipsLeft[newShip] == 0)
-                {
-                    this[target] = true;
-                    return false;
-                }
-                var oldShip = newShip + 1;
-                shipsLeft[oldShip]++;
-                shipsLeft[newShip]--;
-            }
-
-            if (connectedShips.Count == 2)
+            foreach (var ship in connectedShips)
+                shipsLeft[ship]--;
+            if (shipsLeft.Keys.Any(x => x < 0))
             {
                 foreach (var ship in connectedShips)
                     shipsLeft[ship]++;
-                if (shipsLeft.Any(x => x.Value > maxShips[x.Key]))
-                {
-                    foreach (var ship in connectedShips)
-                        shipsLeft[ship]--;
-                    this[target] = true;
-                    return false;
-                }
-                var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
-                shipsLeft[oldShip]++;
-                return true;
+                this[target] = true;
+                return false;
             }
 
-            throw null;
+            var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
+            shipsLeft[oldShip]++;
+            return true;
         }
 
         private int CountConnectedCells(CellPosition start)
