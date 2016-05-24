@@ -29,7 +29,7 @@ namespace Battleship.Implementations
 
             state = new IGameCell[size.Height, size.Width];
             foreach (var position in this.EnumerateCellPositions())
-                this[position] = new GameCell(CellType.Empty);
+                this[position] = new EmptyCell(position);
         }
 
         public BattleshipGameField(Size size, Func<CellPosition, IGameCell> getCell) : this(size)
@@ -62,14 +62,22 @@ namespace Battleship.Implementations
             var cell = this[target];
             if (cell.Damaged)
                 return false;
-
-            //TODO Only when we hitted a ship
+            
             cell.Damaged = true;
-            var diagonalNeighbours = target
-                .ByAngleNeighbours
-                .Select(position => this[position]);
-            foreach (var neighbour in diagonalNeighbours)
-                neighbour.Damaged = true;
+
+            //TODO Mark all cells around if we killed something
+            if (this[target].GetType() == typeof(ShipCell))
+            {
+                var diagonalNeighbours = target
+                    .ByAngleNeighbours
+                    .Select(position => this[position]);
+                foreach (var neighbour in diagonalNeighbours)
+                    neighbour.Damaged = true;
+
+
+                var currentCell = (ShipCell) this[target];
+
+            }
             return true;
         }
 
@@ -101,14 +109,7 @@ namespace Battleship.Implementations
                 return false;
 
             return other.EnumerateCellPositions()
-                .All(position =>
-                {
-                    var currentCell = this[position];
-                    var otherCell = other[position];
-                    return
-                        currentCell.Type == otherCell.Type &&
-                        currentCell.Damaged == otherCell.Damaged;
-                });
+                .All(position => this[position].Equals(other[position]));
         }
 
         public override bool Equals(object obj)

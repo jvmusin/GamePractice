@@ -26,11 +26,13 @@ namespace Battleship.Utilities
         public IEnumerable<CellPosition> ByAngleNeighbours => GetNeighbours(-1, 1);
         public IEnumerable<CellPosition> ByEdgeNeighbours => AllNeighbours.Except(ByAngleNeighbours);
 
+        public CellPosition AddDelta(CellPosition delta) => new CellPosition(Row + delta.Row, Column + delta.Column);
+
         protected bool Equals(CellPosition other)
         {
             return
-                Row == other.Row &&
-                Column == other.Column;
+                Equals(Row, other.Row) &&
+                Equals(Column, other.Column);
         }
 
         public override bool Equals(object obj)

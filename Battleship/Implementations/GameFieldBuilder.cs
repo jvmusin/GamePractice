@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
@@ -113,13 +114,49 @@ namespace Battleship.Implementations
 
         public IBattleshipGameField Build()
         {
-            if (ShipsLeft.Any(x => x.Value > 0))
-                throw new InvalidOperationException("Field can't be built");
+            if (ShipsLeft.Values.Any(x => x > 0))
+                throw new InvalidOperationException("Field isn't filled yet");
+
+            var newField = new IGameCell[size.Height, size.Width];
+            foreach (var row in Enumerable.Range(0, size.Height))
+                foreach (var column in Enumerable.Range(0, size.Width))
+                {
+                    var curCell = new CellPosition(row, column);
+                    if (!this[curCell])
+                        continue;
+
+                    var topCell = new CellPosition(row - 1, column);
+                    var leftCell = new CellPosition(row, column - 1);
+                    var prevCells = new[] {topCell, leftCell};
+                    if (prevCells.Any(cell => IsOnField(cell) && this[cell]))
+                        continue;
+                    
+                    var curShip = new Ship(EnumerateShipCells(curCell));
+                    foreach (var piece in curShip.Pieces)
+                    {
+                        var pos = piece.Position;
+                        newField[pos.Row, pos.Column] = piece;
+                    }
+                }
 
             return new BattleshipGameField(new Size(10, 10),
-                position => new GameCell(this[position]
-                    ? CellType.Ship
-                    : CellType.Empty));
+                position => newField[position.Row, position.Column]);
+        }
+
+        private IEnumerable<CellPosition> EnumerateShipCells(CellPosition start)
+        {
+            var deltaRight = new CellPosition(0, 1);
+            var deltaDown = new CellPosition(1, 0);
+
+            var nextToRight = start.AddDelta(deltaRight);
+            var needToGoRight = IsOnField(nextToRight) && this[nextToRight];
+
+            var current = start;
+            while (IsOnField(current) && this[current])
+            {
+                yield return current;
+                current = current.AddDelta(needToGoRight ? deltaRight : deltaDown);
+            }
         }
 
         private bool IsOnField(CellPosition position)

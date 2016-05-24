@@ -1,10 +1,10 @@
-﻿using Battleship.Implementations;
+﻿using Battleship.Utilities;
 
 namespace Battleship.Interfaces
 {
     public interface IGameCell
     {
-        CellType Type { get; }
+        CellPosition Position { get; }
         bool Damaged { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Battleship.Interfaces;
+using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
@@ -12,13 +13,13 @@ namespace Battleship.Implementations
         public int Health => pieces.Count(cell => !cell.Damaged);
         public bool Killed => Health == 0;
 
-        private readonly List<GameCell> pieces;
-        public IGameCell GetPiece(int index) => pieces[index];
+        private readonly List<ShipCell> pieces;
+        public IEnumerable<IGameCell> Pieces => pieces;
 
-        public Ship(ShipType type)
+        public Ship(IEnumerable<CellPosition> positions)
         {
-            Type = type;
-            pieces = Enumerable.Range(0, Length).Select(x => new GameCell(CellType.Ship)).ToList();
+            pieces = positions.Select((pos, i) => new ShipCell(pos, this)).ToList();
+            Type = (ShipType) pieces.Count;
         }
     }
 }
