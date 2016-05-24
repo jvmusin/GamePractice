@@ -49,5 +49,25 @@ namespace Battleship.Implementations
                 return new GameRules(fieldSize, shipCount);
             }
         }
+
+        protected bool Equals(GameRules other)
+        {
+            return FieldSize.Equals(other.FieldSize) && 
+                Equals(ShipsCount, other.ShipsCount);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as GameRules;
+            return other != null & Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (FieldSize.GetHashCode()*397) ^ (ShipsCount?.GetHashCode() ?? 0);
+            }
+        }
     }
 }

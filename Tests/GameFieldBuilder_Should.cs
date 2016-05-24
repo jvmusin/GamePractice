@@ -37,28 +37,9 @@ namespace Tests
         }
 
         [Test]
-        public void SayCorrectDataByIndexator()
+        public void SayCorrectRules()
         {
-            var field = new[]
-            {
-                "--+++--++-",
-                "----------",
-                "-+---+----",
-                "-----+----",
-                "---+-+----",
-                "---+---+++",
-                "----------",
-                "++++-----+",
-                "---------+"
-            };
-            for (var row = 0; row < field.Length; row++)
-                for (var column = 0; column < field.Length; column++)
-                    if (field[row][column] == '+')
-                        builder.TryAddShipCell(new CellPosition(row, column));
-            
-            for (var row = 0; row < field.Length; row++)
-                for (var column = 0; column < field.Length; column++)
-                    (field[row][column] == '+').Should().Be(builder[new CellPosition(row, column)]);
+            builder.Rules.Should().Be(rules);
         }
 
         #endregion
@@ -75,7 +56,7 @@ namespace Tests
         public void ReturnCorrectShipsLeftCounter_AfterAddingALittleShip()
         {
             builder.TryAddShipCell(new CellPosition(1, 3));
-            shipsCount[(ShipType)1]--;
+            shipsCount[(ShipType) 1]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -87,21 +68,21 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 2));
             builder.TryAddShipCell(new CellPosition(3, 2));
             builder.TryAddShipCell(new CellPosition(4, 2));
-            shipsCount[(ShipType)4]--;
+            shipsCount[(ShipType) 4]--;
 
             builder.TryAddShipCell(new CellPosition(1, 5));
             builder.TryAddShipCell(new CellPosition(1, 6));
-            shipsCount[(ShipType)2]--;
+            shipsCount[(ShipType) 2]--;
 
             builder.TryAddShipCell(new CellPosition(9, 0));
-            shipsCount[(ShipType)1]--;
+            shipsCount[(ShipType) 1]--;
 
             builder.TryAddShipCell(new CellPosition(9, 9));
-            shipsCount[(ShipType)1]--;
+            shipsCount[(ShipType) 1]--;
 
             builder.TryAddShipCell(new CellPosition(6, 4));
             builder.TryAddShipCell(new CellPosition(6, 5));
-            shipsCount[(ShipType)2]--;
+            shipsCount[(ShipType) 2]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -109,7 +90,7 @@ namespace Tests
         [Test]
         public void ReturnCorrectShipsLeftCounter_WhenAllShipsUsed()
         {
-            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 3 }, { ShipType.Destroyer, 2 } };
+            shipsCount = new Dictionary<ShipType, int> {{ShipType.Submarine, 3}, {ShipType.Destroyer, 2}};
             rules = new GameRules(fieldSize, shipsCount);
             builder = new GameFieldBuilder(rules);
 
@@ -123,7 +104,7 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 1));
             builder.TryAddShipCell(new CellPosition(2, 2));
 
-            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+            foreach (var shipType in Enum.GetValues(typeof (ShipType)).Cast<ShipType>())
                 shipsCount[shipType] = 0;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
@@ -133,8 +114,8 @@ namespace Tests
         public void ReturnCorrectShipsLeftCounter_WhenTooManyShipsAdded()
         {
             for (var i = 0; i < 5; i++)
-                builder.TryAddShipCell(new CellPosition(i * 2, i * 2));
-            shipsCount[(ShipType)1] -= 5;
+                builder.TryAddShipCell(new CellPosition(i*2, i*2));
+            shipsCount[(ShipType) 1] -= 5;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -149,8 +130,8 @@ namespace Tests
 
             builder.TryRemoveShipCell(new CellPosition(0, 2));
 
-            shipsCount[(ShipType)1]--;
-            shipsCount[(ShipType)2]--;
+            shipsCount[(ShipType) 1]--;
+            shipsCount[(ShipType) 2]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -186,7 +167,7 @@ namespace Tests
         [Test]
         public void BuildAField_WhenEverythingIsOK()
         {
-            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 3 }, { ShipType.Destroyer, 2 } };
+            shipsCount = new Dictionary<ShipType, int> {{ShipType.Submarine, 3}, {ShipType.Destroyer, 2}};
             rules = new GameRules(fieldSize, shipsCount);
             builder = new GameFieldBuilder(rules);
 
@@ -200,7 +181,7 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 1));
             builder.TryAddShipCell(new CellPosition(2, 2));
 
-            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+            foreach (var shipType in Enum.GetValues(typeof (ShipType)).Cast<ShipType>())
                 shipsCount[shipType] = 0;
 
             builder.Build().Should().NotBeNull();
@@ -209,7 +190,7 @@ namespace Tests
         [Test]
         public void NotBuildAField_WhenThereAreUnusedShips()
         {
-            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 4 }, { ShipType.Destroyer, 2 } };
+            shipsCount = new Dictionary<ShipType, int> {{ShipType.Submarine, 4}, {ShipType.Destroyer, 2}};
             rules = new GameRules(fieldSize, shipsCount);
             builder = new GameFieldBuilder(rules);
 
@@ -223,7 +204,7 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 1));
             builder.TryAddShipCell(new CellPosition(2, 2));
 
-            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+            foreach (var shipType in Enum.GetValues(typeof (ShipType)).Cast<ShipType>())
                 shipsCount[shipType] = 0;
 
             builder.Build().Should().BeNull();
@@ -232,7 +213,7 @@ namespace Tests
         [Test]
         public void NotBuildAField_WhenThereAreTooManyShips()
         {
-            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 1 }, { ShipType.Destroyer, 2 } };
+            shipsCount = new Dictionary<ShipType, int> {{ShipType.Submarine, 1}, {ShipType.Destroyer, 2}};
             rules = new GameRules(fieldSize, shipsCount);
             builder = new GameFieldBuilder(rules);
 
@@ -246,7 +227,7 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 1));
             builder.TryAddShipCell(new CellPosition(2, 2));
 
-            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+            foreach (var shipType in Enum.GetValues(typeof (ShipType)).Cast<ShipType>())
                 shipsCount[shipType] = 0;
 
             builder.Build().Should().BeNull();
@@ -286,7 +267,7 @@ namespace Tests
         [Test]
         public void SayThatItCantConnectTooManyCells_WhenConnectedSequenced()
         {
-            var maxLen = Enum.GetValues(typeof(ShipType)).Cast<ShipType>().Max(x => x.GetLength());
+            var maxLen = Enum.GetValues(typeof (ShipType)).Cast<ShipType>().Max(x => x.GetLength());
 
             for (var i = 0; i < maxLen; i++)
                 builder.TryAddShipCell(new CellPosition(4, i));
@@ -296,7 +277,7 @@ namespace Tests
         [Test]
         public void SayThatItCantConnectTooManyCells_WhenConnectedFromTwoSides()
         {
-            var maxLen = Enum.GetValues(typeof(ShipType)).Cast<ShipType>().Max(x => x.GetLength());
+            var maxLen = Enum.GetValues(typeof (ShipType)).Cast<ShipType>().Max(x => x.GetLength());
 
             builder.TryAddShipCell(new CellPosition(0, 0));
             for (var i = 2; i <= maxLen; i++)
@@ -315,7 +296,7 @@ namespace Tests
         [Test]
         public void ConnectSomeCellsOnField()
         {
-            var positions = new[] { new CellPosition(0, 1), new CellPosition(1, 1), new CellPosition(2, 1) };
+            var positions = new[] {new CellPosition(0, 1), new CellPosition(1, 1), new CellPosition(2, 1)};
             foreach (var position in positions)
                 builder.TryAddShipCell(position);
 
@@ -323,9 +304,21 @@ namespace Tests
                 builder[position].Should().BeTrue();
         }
 
+        [Test]
+        public void NotConnectACellOutsideTheField()
+        {
+            builder.TryAddShipCell(new CellPosition(100, 500)).Should().BeFalse();
+        }
+
         #endregion
 
         #region Disconnection tests
+
+        [Test]
+        public void SayThatItCantDisconnectAnEmptyCell()
+        {
+            builder.TryRemoveShipCell(new CellPosition(3, 5)).Should().BeFalse();
+        }
 
         [Test]
         public void SayThatItDisconnectedALittleShipCorrectly()
@@ -367,6 +360,50 @@ namespace Tests
             builder[positions[1]].Should().BeTrue();
             builder[positions[2]].Should().BeFalse();
             builder[positions[3]].Should().BeTrue();
+        }
+
+
+        [Test]
+        public void NotDisconnectACellOutsideTheField()
+        {
+            builder.TryRemoveShipCell(new CellPosition(100, 500)).Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Indexator tests
+
+        [Test]
+        public void ContainAnEmtyField_AfterCreation()
+        {
+            for (var row = 0; row < fieldSize.Height; row++)
+                for (var column = 0; column < fieldSize.Width; column++)
+                    builder[new CellPosition(row, column)].Should().BeFalse();
+        }
+
+        [Test]
+        public void SayCorrectDataByIndexator()
+        {
+            var field = new[]
+            {
+                "--+++--++-",
+                "----------",
+                "-+---+----",
+                "-----+----",
+                "---+-+----",
+                "---+---+++",
+                "----------",
+                "++++-----+",
+                "---------+"
+            };
+            for (var row = 0; row < field.Length; row++)
+                for (var column = 0; column < field.Length; column++)
+                    if (field[row][column] == '+')
+                        builder.TryAddShipCell(new CellPosition(row, column));
+
+            for (var row = 0; row < field.Length; row++)
+                for (var column = 0; column < field.Length; column++)
+                    (field[row][column] == '+').Should().Be(builder[new CellPosition(row, column)]);
         }
 
         #endregion
