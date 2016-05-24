@@ -25,7 +25,7 @@ namespace Battleship.Implementations
 
             Size = size;
             var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
-            survivedShips = ships.ToDictionary(x => x, x => x.GetLength());
+            survivedShips = ships.ToDictionary(x => x, x => 5 - x.GetLength());
 
             state = new IGameCell[size.Height, size.Width];
             foreach (var position in this.EnumerateCellPositions())
@@ -34,9 +34,6 @@ namespace Battleship.Implementations
 
         public BattleshipGameField(Size size, Func<CellPosition, IGameCell> getCell) : this(size)
         {
-            if (getCell == null)
-                throw new ArgumentNullException(nameof(getCell));
-
             foreach (var position in this.EnumerateCellPositions())
             {
                 var cell = getCell(position);
@@ -70,6 +67,7 @@ namespace Battleship.Implementations
                 var currentShip = ((ShipCell) this[target]).Ship;
                 if (currentShip.Killed)
                 {
+                    survivedShips[currentShip.Type]--;
                     foreach (var shipCellPosition in currentShip.Pieces.Select(x => x.Position))
                         DamageEverythingAround(shipCellPosition);
                     return true;
@@ -116,12 +114,10 @@ namespace Battleship.Implementations
 
         protected bool Equals(IBattleshipGameField other)
         {
-            if (Size != other.Size)
-                return false;
-
-            return other.EnumerateCellPositions()
-                .All(position => this[position].Damaged == other[position].Damaged &&
-                                 this[position].GetType() == other[position].GetType());
+            return Size == other.Size &&
+                   other.EnumerateCellPositions()
+                       .All(position => this[position].Damaged == other[position].Damaged &&
+                                        this[position].GetType() == other[position].GetType());
         }
 
         public override bool Equals(object obj)
