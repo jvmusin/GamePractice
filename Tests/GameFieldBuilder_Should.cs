@@ -99,10 +99,73 @@ namespace Tests
         }
 
         [Test]
-        public void NotAddCells_WhenTheyAreConnectedByAngle()
+        public void ReturnCorrectShipsLeftCounter_WhenTooManyShipsAdded()
         {
-            builder.TryAddShipCell(new CellPosition(0, 0));
-            builder.TryAddShipCell(new CellPosition(1, 1));
+            for (var i = 0; i < 5; i ++)
+                builder.TryAddShipCell(new CellPosition(i * 2, i * 2));
+            shipsCount[(ShipType) 1] -= 5;
+
+            builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
+        }
+
+        [Test]
+        public void ReturnCorrectShipsLeftCounter_AfterRemovingCells()
+        {
+            builder.TryAddShipCell(new CellPosition(0, 1));
+            builder.TryAddShipCell(new CellPosition(0, 2));
+            builder.TryAddShipCell(new CellPosition(0, 3));
+            builder.TryAddShipCell(new CellPosition(0, 4));
+
+            builder.TryRemoveShipCell(new CellPosition(0, 2));
+
+            shipsCount[(ShipType) 1]--;
+            shipsCount[(ShipType) 2]--;
+
+            builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
+        }
+
+        [Test]
+        public void ReturnCorrectShipsLeftCounter_AfterRemovingAllCells()
+        {
+            var cells = new[]
+            {
+                new CellPosition(0, 1),
+                new CellPosition(0, 2),
+                new CellPosition(0, 3),
+                new CellPosition(0, 4),
+
+                new CellPosition(5, 5),
+                new CellPosition(5, 6),
+                
+                new CellPosition(8, 9)   
+            };
+
+            foreach (var cell in cells)
+                builder.TryAddShipCell(cell);
+            foreach (var cell in cells)
+                builder.TryRemoveShipCell(cell);
+
+            builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
+        }
+
+        [Test]
+        public void SayThatItConnectedACell()
+        {
+            builder.TryAddShipCell(new CellPosition(3, 4)).Should().BeTrue();
+        }
+
+        [Test]
+        public void SayThatItCantConnectAlreadyConnectedCell()
+        {
+            builder.TryAddShipCell(new CellPosition(3, 4));
+            builder.TryAddShipCell(new CellPosition(3, 4)).Should().BeFalse();
+        }
+
+        [Test]
+        public void SayThatItCantConnectByAngleConnectedCells()
+        {
+            builder.TryAddShipCell(new CellPosition(3, 4));
+            builder.TryAddShipCell(new CellPosition(4, 5)).Should().BeFalse();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Battleship.Implementations
             if (!IsOnField(target) || this[target])
                 return false;
             
-            if (HaveConnectedByAngleShip(target))
+            if (HasConnectedByAngleShips(target))
                 return false;
 
             var connectedShips = GetConnectedShips(target).ToList();
@@ -83,9 +83,9 @@ namespace Battleship.Implementations
             return true;
         }
 
-        private bool HaveConnectedByAngleShip(CellPosition position)
+        private bool HasConnectedByAngleShips(CellPosition position)
         {
-            return position.ByAngleNeighbours.Where(IsOnField).Any(x => this[x]);
+            return position.ByAngleNeighbours.Any(x => IsOnField(x) && this[x]);
         }
 
         private IEnumerable<ShipType> GetConnectedShips(CellPosition position)
@@ -119,8 +119,8 @@ namespace Battleship.Implementations
 
         public IGameField Build()
         {
-            if (ShipsLeft.Values.Any(x => x > 0))
-                throw new InvalidOperationException("Field isn't filled yet");
+            if (ShipsLeft.Values.Any(x => x != 0))
+                throw new InvalidOperationException("Field isn't filled yet correctly");
 
             var newField = new IGameCell[FieldSize.Height, FieldSize.Width];
             foreach (var row in Enumerable.Range(0, FieldSize.Height))
