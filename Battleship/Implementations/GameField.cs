@@ -63,29 +63,20 @@ namespace Battleship.Implementations
                     survivedShips[currentShip.Type]--;
                     var affectedCells = currentShip.Pieces
                         .Select(x => x.Position)
-                        .SelectMany(DamageEverythingAround)
+                        .SelectMany(x => Damage(x.AllNeighbours))
                         .ToList();
                     return ShotResult.Kill(target, affectedCells);
                 }
                 
-                return ShotResult.Hit(target, DamageEverythingConnectedByAngle(target));
+                return ShotResult.Hit(target, Damage(target.ByAngleNeighbours));
             }
 
             return ShotResult.Miss(target);
         }
 
-        private IEnumerable<CellPosition> DamageEverythingAround(CellPosition cell)
+        private IEnumerable<CellPosition> Damage(IEnumerable<CellPosition> targets)
         {
-            foreach (var neighbour in cell.AllNeighbours.Where(IsOnField).Where(pos => !this[pos].Damaged))
-            {
-                this[neighbour].Damaged = true;
-                yield return neighbour;
-            }
-        }
-
-        private IEnumerable<CellPosition> DamageEverythingConnectedByAngle(CellPosition cell)
-        {
-            foreach (var neighbour in cell.ByAngleNeighbours.Where(IsOnField).Where(pos => !this[pos].Damaged))
+            foreach (var neighbour in targets.Where(pos => IsOnField(pos) && !this[pos].Damaged))
             {
                 this[neighbour].Damaged = true;
                 yield return neighbour;
