@@ -1,6 +1,5 @@
 ﻿using System;
 using Battleship.Interfaces;
-using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
