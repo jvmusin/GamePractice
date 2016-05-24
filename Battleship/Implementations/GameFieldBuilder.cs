@@ -120,7 +120,7 @@ namespace Battleship.Implementations
         public IGameField Build()
         {
             if (ShipsLeft.Values.Any(x => x != 0))
-                throw new InvalidOperationException("Field isn't filled yet correctly");
+                return null;
 
             var newField = new IGameCell[FieldSize.Height, FieldSize.Width];
             foreach (var row in Enumerable.Range(0, FieldSize.Height))

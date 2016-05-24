@@ -25,6 +25,8 @@ namespace Tests
             builder = new GameFieldBuilder(rules);
         }
 
+        #region Base tests
+
         [Test]
         public void SayCorrectSize()
         {
@@ -33,6 +35,35 @@ namespace Tests
 
             builder.FieldSize.Should().Be(fieldSize);
         }
+
+        [Test]
+        public void SayCorrectDataByIndexator()
+        {
+            var field = new[]
+            {
+                "--+++--++-",
+                "----------",
+                "-+---+----",
+                "-----+----",
+                "---+-+----",
+                "---+---+++",
+                "----------",
+                "++++-----+",
+                "---------+"
+            };
+            for (var row = 0; row < field.Length; row++)
+                for (var column = 0; column < field.Length; column++)
+                    if (field[row][column] == '+')
+                        builder.TryAddShipCell(new CellPosition(row, column));
+            
+            for (var row = 0; row < field.Length; row++)
+                for (var column = 0; column < field.Length; column++)
+                    (field[row][column] == '+').Should().Be(builder[new CellPosition(row, column)]);
+        }
+
+        #endregion
+
+        #region Returning ShipsLeft counter tests
 
         [Test]
         public void ReturnCorrectShipsLeftCounter_WhenJustCreated()
@@ -44,7 +75,7 @@ namespace Tests
         public void ReturnCorrectShipsLeftCounter_AfterAddingALittleShip()
         {
             builder.TryAddShipCell(new CellPosition(1, 3));
-            shipsCount[(ShipType) 1]--;
+            shipsCount[(ShipType)1]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -56,21 +87,21 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(2, 2));
             builder.TryAddShipCell(new CellPosition(3, 2));
             builder.TryAddShipCell(new CellPosition(4, 2));
-            shipsCount[(ShipType) 4]--;
+            shipsCount[(ShipType)4]--;
 
             builder.TryAddShipCell(new CellPosition(1, 5));
             builder.TryAddShipCell(new CellPosition(1, 6));
-            shipsCount[(ShipType) 2]--;
+            shipsCount[(ShipType)2]--;
 
             builder.TryAddShipCell(new CellPosition(9, 0));
-            shipsCount[(ShipType) 1]--;
+            shipsCount[(ShipType)1]--;
 
             builder.TryAddShipCell(new CellPosition(9, 9));
-            shipsCount[(ShipType) 1]--;
+            shipsCount[(ShipType)1]--;
 
             builder.TryAddShipCell(new CellPosition(6, 4));
             builder.TryAddShipCell(new CellPosition(6, 5));
-            shipsCount[(ShipType) 2]--;
+            shipsCount[(ShipType)2]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -78,17 +109,17 @@ namespace Tests
         [Test]
         public void ReturnCorrectShipsLeftCounter_WhenAllShipsUsed()
         {
-            shipsCount = new Dictionary<ShipType, int> {{ShipType.Submarine, 3}, {ShipType.Destroyer, 2}};
+            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 3 }, { ShipType.Destroyer, 2 } };
             rules = new GameRules(fieldSize, shipsCount);
             builder = new GameFieldBuilder(rules);
 
-            builder.TryAddShipCell(new CellPosition(7, 2));
             builder.TryAddShipCell(new CellPosition(0, 0));
+            builder.TryAddShipCell(new CellPosition(7, 2));
             builder.TryAddShipCell(new CellPosition(9, 7));
 
             builder.TryAddShipCell(new CellPosition(6, 4));
             builder.TryAddShipCell(new CellPosition(6, 5));
-            
+
             builder.TryAddShipCell(new CellPosition(2, 1));
             builder.TryAddShipCell(new CellPosition(2, 2));
 
@@ -101,9 +132,9 @@ namespace Tests
         [Test]
         public void ReturnCorrectShipsLeftCounter_WhenTooManyShipsAdded()
         {
-            for (var i = 0; i < 5; i ++)
+            for (var i = 0; i < 5; i++)
                 builder.TryAddShipCell(new CellPosition(i * 2, i * 2));
-            shipsCount[(ShipType) 1] -= 5;
+            shipsCount[(ShipType)1] -= 5;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -118,8 +149,8 @@ namespace Tests
 
             builder.TryRemoveShipCell(new CellPosition(0, 2));
 
-            shipsCount[(ShipType) 1]--;
-            shipsCount[(ShipType) 2]--;
+            shipsCount[(ShipType)1]--;
+            shipsCount[(ShipType)2]--;
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
@@ -136,8 +167,8 @@ namespace Tests
 
                 new CellPosition(5, 5),
                 new CellPosition(5, 6),
-                
-                new CellPosition(8, 9)   
+
+                new CellPosition(8, 9)
             };
 
             foreach (var cell in cells)
@@ -147,6 +178,83 @@ namespace Tests
 
             builder.ShipsLeft.Should().BeEquivalentTo(shipsCount);
         }
+
+        #endregion
+
+        #region Building tests
+
+        [Test]
+        public void BuildAField_WhenEverythingIsOK()
+        {
+            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 3 }, { ShipType.Destroyer, 2 } };
+            rules = new GameRules(fieldSize, shipsCount);
+            builder = new GameFieldBuilder(rules);
+
+            builder.TryAddShipCell(new CellPosition(0, 0));
+            builder.TryAddShipCell(new CellPosition(7, 2));
+            builder.TryAddShipCell(new CellPosition(9, 7));
+
+            builder.TryAddShipCell(new CellPosition(6, 4));
+            builder.TryAddShipCell(new CellPosition(6, 5));
+
+            builder.TryAddShipCell(new CellPosition(2, 1));
+            builder.TryAddShipCell(new CellPosition(2, 2));
+
+            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+                shipsCount[shipType] = 0;
+
+            builder.Build().Should().NotBeNull();
+        }
+
+        [Test]
+        public void NotBuildAField_WhenThereAreUnusedShips()
+        {
+            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 4 }, { ShipType.Destroyer, 2 } };
+            rules = new GameRules(fieldSize, shipsCount);
+            builder = new GameFieldBuilder(rules);
+
+            builder.TryAddShipCell(new CellPosition(0, 0));
+            builder.TryAddShipCell(new CellPosition(7, 2));
+            builder.TryAddShipCell(new CellPosition(9, 7));
+
+            builder.TryAddShipCell(new CellPosition(6, 4));
+            builder.TryAddShipCell(new CellPosition(6, 5));
+
+            builder.TryAddShipCell(new CellPosition(2, 1));
+            builder.TryAddShipCell(new CellPosition(2, 2));
+
+            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+                shipsCount[shipType] = 0;
+
+            builder.Build().Should().BeNull();
+        }
+
+        [Test]
+        public void NotBuildAField_WhenThereAreTooManyShips()
+        {
+            shipsCount = new Dictionary<ShipType, int> { { ShipType.Submarine, 1 }, { ShipType.Destroyer, 2 } };
+            rules = new GameRules(fieldSize, shipsCount);
+            builder = new GameFieldBuilder(rules);
+
+            builder.TryAddShipCell(new CellPosition(0, 0));
+            builder.TryAddShipCell(new CellPosition(7, 2));
+            builder.TryAddShipCell(new CellPosition(9, 7));
+
+            builder.TryAddShipCell(new CellPosition(6, 4));
+            builder.TryAddShipCell(new CellPosition(6, 5));
+
+            builder.TryAddShipCell(new CellPosition(2, 1));
+            builder.TryAddShipCell(new CellPosition(2, 2));
+
+            foreach (var shipType in Enum.GetValues(typeof(ShipType)).Cast<ShipType>())
+                shipsCount[shipType] = 0;
+
+            builder.Build().Should().BeNull();
+        }
+
+        #endregion
+
+        #region Connection tests
 
         [Test]
         public void SayThatItConnectedACell()
@@ -167,5 +275,100 @@ namespace Tests
             builder.TryAddShipCell(new CellPosition(3, 4));
             builder.TryAddShipCell(new CellPosition(4, 5)).Should().BeFalse();
         }
+
+        [Test]
+        public void SayThatItCanConnectManyCells()
+        {
+            for (var i = 0; i < 4; i++)
+                builder.TryAddShipCell(new CellPosition(4, i)).Should().BeTrue();
+        }
+
+        [Test]
+        public void SayThatItCantConnectTooManyCells_WhenConnectedSequenced()
+        {
+            var maxLen = Enum.GetValues(typeof(ShipType)).Cast<ShipType>().Max(x => x.GetLength());
+
+            for (var i = 0; i < maxLen; i++)
+                builder.TryAddShipCell(new CellPosition(4, i));
+            builder.TryAddShipCell(new CellPosition(4, maxLen)).Should().BeFalse();
+        }
+
+        [Test]
+        public void SayThatItCantConnectTooManyCells_WhenConnectedFromTwoSides()
+        {
+            var maxLen = Enum.GetValues(typeof(ShipType)).Cast<ShipType>().Max(x => x.GetLength());
+
+            builder.TryAddShipCell(new CellPosition(0, 0));
+            for (var i = 2; i <= maxLen; i++)
+                builder.TryAddShipCell(new CellPosition(0, i));
+            builder.TryAddShipCell(new CellPosition(0, 1)).Should().BeFalse();
+        }
+
+        [Test]
+        public void ConnectACellOnField()
+        {
+            var position = new CellPosition(5, 6);
+            builder.TryAddShipCell(position);
+            builder[position].Should().BeTrue();
+        }
+
+        [Test]
+        public void ConnectSomeCellsOnField()
+        {
+            var positions = new[] { new CellPosition(0, 1), new CellPosition(1, 1), new CellPosition(2, 1) };
+            foreach (var position in positions)
+                builder.TryAddShipCell(position);
+
+            foreach (var position in positions)
+                builder[position].Should().BeTrue();
+        }
+
+        #endregion
+
+        #region Disconnection tests
+
+        [Test]
+        public void SayThatItDisconnectedALittleShipCorrectly()
+        {
+            var pos = new CellPosition(5, 6);
+            builder.TryAddShipCell(pos);
+
+            builder.TryRemoveShipCell(pos).Should().BeTrue();
+        }
+
+        [Test]
+        public void SayThatItDisconnectedALargeShipCorrectly()
+        {
+            var positions = Enumerable.Range(0, 4).Select(i => new CellPosition(3, i)).ToList();
+            foreach (var position in positions)
+                builder.TryAddShipCell(position);
+            builder.TryRemoveShipCell(positions[2]).Should().BeTrue();
+        }
+
+        [Test]
+        public void DisconnectALittleShipOnField()
+        {
+            var pos = new CellPosition(5, 6);
+            builder.TryAddShipCell(pos);
+
+            builder.TryRemoveShipCell(pos);
+            builder[pos].Should().BeFalse();
+        }
+
+        [Test]
+        public void DisconnectALargeShipOnField()
+        {
+            var positions = Enumerable.Range(0, 4).Select(i => new CellPosition(3, i)).ToList();
+            foreach (var position in positions)
+                builder.TryAddShipCell(position);
+            builder.TryRemoveShipCell(positions[2]).Should().BeTrue();
+
+            builder[positions[0]].Should().BeTrue();
+            builder[positions[1]].Should().BeTrue();
+            builder[positions[2]].Should().BeFalse();
+            builder[positions[3]].Should().BeTrue();
+        }
+
+        #endregion
     }
 }
