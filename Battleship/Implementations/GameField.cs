@@ -7,9 +7,10 @@ using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class BattleshipGameField : IBattleshipGameField
+    public class GameField : IGameField
     {
-        public Size Size { get; }
+        public GameRules Rules { get; }
+        public Size Size => Rules.FieldSize;
         public IReadOnlyDictionary<ShipType, int> SurvivedShips => survivedShips;
 
         private readonly IGameCell[,] state;
@@ -17,33 +18,24 @@ namespace Battleship.Implementations
 
         #region Constructors
 
-        public BattleshipGameField(Size size)
+        public GameField(GameRules rules)
         {
-            if (!size.Height.IsInRange(1, int.MaxValue) ||
-                !size.Width.IsInRange(1, int.MaxValue))
-                throw new ArgumentOutOfRangeException(nameof(size));
+            Rules = rules;
+            survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
 
-            Size = size;
-            var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
-            survivedShips = ships.ToDictionary(x => x, x => 5 - x.GetLength());
-
-            state = new IGameCell[size.Height, size.Width];
+            state = new IGameCell[Size.Height, Size.Width];
             foreach (var position in this.EnumerateCellPositions())
                 this[position] = new EmptyCell(position);
         }
 
-        public BattleshipGameField(Size size, Func<CellPosition, IGameCell> getCell) : this(size)
+        public GameField(GameRules rules, Func<CellPosition, IGameCell> getCell) : this(rules)
         {
             foreach (var position in this.EnumerateCellPositions())
-            {
-                var cell = getCell(position);
-                if (cell == null)
+                if ((this[position] = getCell(position)) == null)
                     throw new NullReferenceException("Ship can't be null");
-                this[position] = cell;
-            }
         }
 
-        public BattleshipGameField(IBattleshipGameField source) : this(source.Size)
+        public GameField(IGameField source) : this(source.Rules)
         {
             foreach (var position in source.EnumerateCellPositions())
                 this[position] = source[position];
@@ -112,7 +104,7 @@ namespace Battleship.Implementations
             return string.Join("\n", rows);
         }
 
-        protected bool Equals(IBattleshipGameField other)
+        protected bool Equals(IGameField other)
         {
             return Size == other.Size &&
                    other.EnumerateCellPositions()
@@ -122,7 +114,7 @@ namespace Battleship.Implementations
 
         public override bool Equals(object obj)
         {
-            var other = obj as IBattleshipGameField;
+            var other = obj as IGameField;
             return other != null && Equals(other);
         }
 

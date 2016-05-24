@@ -1,11 +1,13 @@
 ﻿namespace Battleship.Interfaces
 {
-    public interface IBattleshipGame
+    public interface IGameController
     {
-        IBattleshipGameField GetPlayerGameField();
-        IBattleshipGameField GetEnemyGameField();
+        IGameField GetPlayerGameField();
+        IGameField GetEnemyGameField();
+
         bool PlayerTurns { get; }
         bool MakeTurn(ITurn turn);
+
         bool IsOver { get; }
     }
 }

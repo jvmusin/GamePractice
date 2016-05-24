@@ -4,7 +4,7 @@ using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class ShipCell : IGameCell
+    public class ShipCell : IShipCell
     {
         public CellPosition Position { get; }
         public bool Damaged { get; set; }

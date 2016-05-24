@@ -68,19 +68,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementations\BattleshipGameField.cs" />
+    <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
+    <Compile Include="Implementations\GameRules.cs" />
     <Compile Include="Implementations\ShipCell.cs" />
-    <Compile Include="Interfaces\IBattleshipGame.cs" />
+    <Compile Include="Interfaces\IGameController.cs" />
     <Compile Include="Implementations\GameFieldBuilder.cs" />
+    <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\ITurn.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
-    <Compile Include="Utilities\RectangularReadonlyFieldExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
-    <Compile Include="Utilities\CellPosition.cs" />
+    <Compile Include="Implementations\CellPosition.cs" />
     <Compile Include="Interfaces\IGameCell.cs" />
-    <Compile Include="Interfaces\IBattleshipGameField.cs" />
+    <Compile Include="Interfaces\IGameField.cs" />
     <Compile Include="Interfaces\IRectangularReadonlyField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

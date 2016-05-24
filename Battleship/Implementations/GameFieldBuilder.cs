@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
@@ -10,24 +9,23 @@ namespace Battleship.Implementations
 {
     public class GameFieldBuilder
     {
-        private readonly Size size;
+        public Size Size { get; }
+        public GameRules Rules { get; }
+
         private readonly bool[,] field;
         private readonly Dictionary<ShipType, int> shipsLeft;
-        private readonly Dictionary<ShipType, int> maxShips;  
 
         public IReadOnlyDictionary<ShipType, int> ShipsLeft => shipsLeft;
 
-        public GameFieldBuilder(Size size)
+        public GameFieldBuilder(GameRules rules)
         {
-            field = new bool[size.Height, size.Width];
-
-            var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
-
-            maxShips = ships.ToDictionary(x => x, x => 5 - x.GetLength());
-            shipsLeft = new Dictionary<ShipType, int>(maxShips);
+            Rules = rules;
+            Size = rules.FieldSize;
+            field = new bool[Size.Height, Size.Width];
+            shipsLeft = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public GameFieldBuilder() : this(new Size(10, 10))
+        public GameFieldBuilder() : this(GameRules.Default)
         {
         }
 
@@ -36,11 +34,7 @@ namespace Battleship.Implementations
             if (!IsOnField(target) || this[target])
                 return false;
 
-            var connectedShips = target.ByEdgeNeighbours
-                .Where(IsOnField)
-                .Select(CountConnectedCells)
-                .Cast<ShipType>()
-                .ToList();
+            var connectedShips = GetConnectedShips(target).ToList();
             var newShipLength = connectedShips.Sum(type => type.GetLength()) + 1;
 
             if (!Enum.IsDefined(typeof (ShipType), newShipLength))
@@ -64,11 +58,7 @@ namespace Battleship.Implementations
                 return false;
 
             this[target] = false;
-            var connectedShips = target.ByEdgeNeighbours
-                .Where(IsOnField)
-                .Select(CountConnectedCells)
-                .Cast<ShipType>()
-                .ToList();
+            var connectedShips = GetConnectedShips(target).ToList();
 
             if (!connectedShips.Any())
             {
@@ -89,6 +79,14 @@ namespace Battleship.Implementations
             var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
             shipsLeft[oldShip]++;
             return true;
+        }
+
+        private IEnumerable<ShipType> GetConnectedShips(CellPosition position)
+        {
+            return position.ByEdgeNeighbours
+                .Where(IsOnField)
+                .Select(CountConnectedCells)
+                .Cast<ShipType>();
         }
 
         private int CountConnectedCells(CellPosition start)
@@ -112,14 +110,14 @@ namespace Battleship.Implementations
             return visited.Count;
         }
 
-        public IBattleshipGameField Build()
+        public IGameField Build()
         {
             if (ShipsLeft.Values.Any(x => x > 0))
                 throw new InvalidOperationException("Field isn't filled yet");
 
-            var newField = new IGameCell[size.Height, size.Width];
-            foreach (var row in Enumerable.Range(0, size.Height))
-                foreach (var column in Enumerable.Range(0, size.Width))
+            var newField = new IGameCell[Size.Height, Size.Width];
+            foreach (var row in Enumerable.Range(0, Size.Height))
+                foreach (var column in Enumerable.Range(0, Size.Width))
                 {
                     var curCell = new CellPosition(row, column);
                     if (!this[curCell])
@@ -139,7 +137,7 @@ namespace Battleship.Implementations
                     }
                 }
 
-            return new BattleshipGameField(new Size(10, 10),
+            return new GameField(GameRules.Default,
                 position => newField[position.Row, position.Column]);
         }
 
@@ -162,8 +160,8 @@ namespace Battleship.Implementations
         private bool IsOnField(CellPosition position)
         {
             return
-                position.Row.IsInRange(0, size.Height) &&
-                position.Column.IsInRange(0, size.Width);
+                position.Row.IsInRange(0, Size.Height) &&
+                position.Column.IsInRange(0, Size.Width);
         }
 
         private bool this[CellPosition position] {

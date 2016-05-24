@@ -11,13 +11,13 @@
 //    [TestFixture]
 //    public class BattleshipGameField_Should : TestBase
 //    {
-//        private BattleshipGameField field;
+//        private GameField field;
 //        private Func<CellPosition, IGameCell> byRowNumerator;
 //
 //        [SetUp]
 //        public void SetUp()
 //        {
-//            field = new BattleshipGameField(10, 15);
+//            field = new GameField(10, 15);
 //            byRowNumerator = (row, column) => new GameCell(CellType.Empty);
 //        }
 //
@@ -26,7 +26,7 @@
 //        {
 //            var height = 5;
 //            var width = 6;
-//            field = new BattleshipGameField(height, width);
+//            field = new GameField(height, width);
 //
 //            field.Height.Should().Be(height);
 //            field.Width.Should().Be(width);
@@ -39,14 +39,14 @@
 //        {
 //            if (height > 0 && width > 0)
 //                return;
-//            Action create = () => new BattleshipGameField(height, width);
+//            Action create = () => new GameField(height, width);
 //            create.ShouldThrow<Exception>();
 //        }
 //
 //        [Test]
 //        public void RememberCellValuesCorrectly()
 //        {
-//            field = new BattleshipGameField(10, 15, byRowNumerator);
+//            field = new GameField(10, 15, byRowNumerator);
 //
 //            foreach (var position in field.EnumerateCellPositions())
 //            {
@@ -59,7 +59,7 @@
 //        [Test]
 //        public void ReturnRealValuesOnGetRow()
 //        {
-//            field = new BattleshipGameField(10, 15, byRowNumerator);
+//            field = new GameField(10, 15, byRowNumerator);
 //
 //            foreach (var row in Enumerable.Range(0, field.Height))
 //            {
@@ -73,7 +73,7 @@
 //        [Test]
 //        public void ReturnRealValuesOnGetColumn()
 //        {
-//            field = new BattleshipGameField(10, 15, byRowNumerator);
+//            field = new GameField(10, 15, byRowNumerator);
 //
 //            foreach (var column in Enumerable.Range(0, field.Width))
 //            {
