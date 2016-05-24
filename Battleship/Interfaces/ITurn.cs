@@ -1,4 +1,4 @@
-﻿using Battleship.Utilities;
+﻿using Battleship.Implementations;
 
 namespace Battleship.Interfaces
 {
