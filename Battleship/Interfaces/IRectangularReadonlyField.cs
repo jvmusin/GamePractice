@@ -7,6 +7,6 @@ namespace Battleship.Interfaces
     {
         Size Size { get; }
         T this[CellPosition position] { get; }
-        bool Contains(CellPosition position);
+        bool IsOnField(CellPosition cell);
     }
 }

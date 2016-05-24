@@ -56,7 +56,7 @@ namespace Battleship.Implementations
 
         public bool Shoot(CellPosition target)
         {
-            if (!this.IsOnField(target))
+            if (!IsOnField(target))
                 return false;
 
             var cell = this[target];
@@ -65,27 +65,38 @@ namespace Battleship.Implementations
             
             cell.Damaged = true;
 
-            //TODO Mark all cells around if we killed something
-            if (this[target].GetType() == typeof(ShipCell))
+            if (this[target].GetType() == typeof (ShipCell))
             {
+                var currentShip = ((ShipCell) this[target]).Ship;
+                if (currentShip.Killed)
+                {
+                    foreach (var shipCellPosition in currentShip.Pieces.Select(x => x.Position))
+                        DamageEverythingAround(shipCellPosition);
+                    return true;
+                }
+
                 var diagonalNeighbours = target
                     .ByAngleNeighbours
+                    .Where(IsOnField)
                     .Select(position => this[position]);
                 foreach (var neighbour in diagonalNeighbours)
                     neighbour.Damaged = true;
-
-
-                var currentCell = (ShipCell) this[target];
-
             }
+
             return true;
         }
 
-        public bool Contains(CellPosition position)
+        private void DamageEverythingAround(CellPosition cell)
+        {
+            foreach (var neighbour in cell.AllNeighbours.Where(IsOnField))
+                this[neighbour].Damaged = true;
+        }
+
+        public bool IsOnField(CellPosition cell)
         {
             return
-                position.Row.IsInRange(0, Size.Height) &&
-                position.Column.IsInRange(0, Size.Width);
+                cell.Row.IsInRange(0, Size.Height) &&
+                cell.Column.IsInRange(0, Size.Width);
         }
 
         public IGameCell this[CellPosition position]
@@ -109,7 +120,8 @@ namespace Battleship.Implementations
                 return false;
 
             return other.EnumerateCellPositions()
-                .All(position => this[position].Equals(other[position]));
+                .All(position => this[position].Damaged == other[position].Damaged &&
+                                 this[position].GetType() == other[position].GetType());
         }
 
         public override bool Equals(object obj)

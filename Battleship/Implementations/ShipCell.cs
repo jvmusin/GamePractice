@@ -8,25 +8,24 @@ namespace Battleship.Implementations
     {
         public CellPosition Position { get; }
         public bool Damaged { get; set; }
-        public IShip Parent { get; }
+        public IShip Ship { get; }
 
-        public ShipCell(CellPosition position, IShip parent)
+        public ShipCell(CellPosition position, IShip ship)
         {
             if (position == null)
                 throw new ArgumentNullException(nameof(position));
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
+            if (ship == null)
+                throw new ArgumentNullException(nameof(ship));
 
             Position = position;
-            Parent = parent;
+            Ship = ship;
         }
 
         protected bool Equals(ShipCell other)
         {
             return
                 Equals(Position, other.Position) &&
-                Equals(Damaged, other.Damaged) &&
-                Equals(Parent, other.Parent);
+                Equals(Damaged, other.Damaged);
         }
 
         public override bool Equals(object obj)

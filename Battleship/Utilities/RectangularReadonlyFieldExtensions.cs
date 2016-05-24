@@ -25,10 +25,5 @@ namespace Battleship.Utilities
                 from column in Enumerable.Range(0, field.Size.Width)
                 select new CellPosition(row, column);
         }
-
-        public static bool IsOnField<T>(this IRectangularReadonlyField<T> field, CellPosition position)
-        {
-            return field.Contains(position);
-        }
     }
 }
