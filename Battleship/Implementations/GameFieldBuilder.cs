@@ -49,9 +49,9 @@ namespace Battleship.Implementations
             if (shipsLeft[newShip] == 0)
                 return false;
 
-            shipsLeft[newShip]--;
             foreach (var destroyedShip in connectedShips)
                 shipsLeft[destroyedShip]++;
+            shipsLeft[newShip]--;
 
             this[target] = true;
             return true;
@@ -84,8 +84,8 @@ namespace Battleship.Implementations
                     return false;
                 }
                 var oldShip = newShip + 1;
-                shipsLeft[newShip]--;
                 shipsLeft[oldShip]++;
+                shipsLeft[newShip]--;
             }
 
             if (connectedShips.Count == 2)
@@ -99,6 +99,8 @@ namespace Battleship.Implementations
                     this[target] = true;
                     return false;
                 }
+                var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
+                shipsLeft[oldShip]++;
                 return true;
             }
 
