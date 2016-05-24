@@ -10,56 +10,131 @@ namespace Battleship.Implementations
     public class GameFieldBuilder
     {
         private readonly Size size;
-        private readonly bool[,] filled;
-        private readonly Dictionary<ShipType, int> shipsCounter;
+        private readonly bool[,] field;
+        private readonly Dictionary<ShipType, int> shipsLeft;
+        private readonly Dictionary<ShipType, int> maxShips;  
 
-        public IReadOnlyDictionary<ShipType, int> ShipsCounter => shipsCounter;
+        public IReadOnlyDictionary<ShipType, int> ShipsLeft => shipsLeft;
+
+        public GameFieldBuilder(Size size)
+        {
+            field = new bool[size.Height, size.Width];
+
+            var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
+
+            maxShips = ships.ToDictionary(x => x, x => 5 - x.GetLength());
+            shipsLeft = new Dictionary<ShipType, int>(maxShips);
+        }
 
         public GameFieldBuilder() : this(new Size(10, 10))
         {
         }
 
-        public GameFieldBuilder(Size size)
+        public bool TryAddShipCell(CellPosition target)
         {
-            filled = new bool[size.Height, size.Width];
-            var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
-            shipsCounter = ships.ToDictionary(x => x, x => x.GetLength());
-        }
-
-        public bool TryAddShipCell(CellPosition position)
-        {
-            if (!IsPositionValid(position))
+            if (!IsOnField(target) || this[target])
                 return false;
 
-            //TODO Add checking position and changing shipsCounter state
+            var connectedShips = target.ByEdgeNeighbours
+                .Where(IsOnField)
+                .Select(CountConnectedCells)
+                .Cast<ShipType>()
+                .ToList();
+            var newShipLength = connectedShips.Sum(type => type.GetLength()) + 1;
 
-            this[position] = true;
+            if (!Enum.IsDefined(typeof (ShipType), newShipLength))
+                return false;
+
+            var newShip = (ShipType) newShipLength;
+            if (shipsLeft[newShip] == 0)
+                return false;
+
+            shipsLeft[newShip]--;
+            foreach (var destroyedShip in connectedShips)
+                shipsLeft[destroyedShip]++;
+
+            this[target] = true;
             return true;
         }
 
-        public bool TryRemoveShipCell(CellPosition position)
+        public bool TryRemoveShipCell(CellPosition target)
         {
-            if (!IsOnField(position) || !this[position])
+            if (!IsOnField(target) || !this[target])
                 return false;
 
-            //TODO Add checking position and changing shipsCounter state
+            this[target] = false;
+            var connectedShips = target.ByEdgeNeighbours
+                .Where(IsOnField)
+                .Select(CountConnectedCells)
+                .Cast<ShipType>()
+                .ToList();
 
-            this[position] = false;
-            return true;
+            if (!connectedShips.Any())
+            {
+                shipsLeft[(ShipType) 1]++;
+                return true;
+            }
+
+            if (connectedShips.Count == 1)
+            {
+                var newShip = connectedShips[0];
+                if (shipsLeft[newShip] == 0)
+                {
+                    this[target] = true;
+                    return false;
+                }
+                var oldShip = newShip + 1;
+                shipsLeft[newShip]--;
+                shipsLeft[oldShip]++;
+            }
+
+            if (connectedShips.Count == 2)
+            {
+                foreach (var ship in connectedShips)
+                    shipsLeft[ship]++;
+                if (shipsLeft.Any(x => x.Value > maxShips[x.Key]))
+                {
+                    foreach (var ship in connectedShips)
+                        shipsLeft[ship]--;
+                    this[target] = true;
+                    return false;
+                }
+                return true;
+            }
+
+            throw null;
+        }
+
+        private int CountConnectedCells(CellPosition start)
+        {
+            var visited = new HashSet<CellPosition> {start};
+            var queue = new Queue<CellPosition>();
+            queue.Enqueue(start);
+
+            while (queue.Any())
+            {
+                var current = queue.Dequeue();
+                var ways = current.ByEdgeNeighbours
+                    .Where(x => IsOnField(x) && !visited.Contains(x) && this[start]);
+                foreach (var connected in ways)
+                {
+                    visited.Add(connected);
+                    queue.Enqueue(connected);
+                }
+            }
+
+            return visited.Count;
         }
 
         public IBattleshipGameField Build()
         {
+            if (ShipsLeft.Any(x => x.Value > 0))
+                throw new InvalidOperationException("Field can't be built");
+
             return new BattleshipGameField(new Size(10, 10),
                 position => new GameCell(this[position]
                     ? CellType.Ship
                     : CellType.Empty));
-        }
-
-        private bool IsPositionValid(CellPosition position)
-        {
-            return IsOnField(position) && !this[position] &&
-                   position.AllNeighbours.Where(IsOnField).All(pos => !this[pos]);
         }
 
         private bool IsOnField(CellPosition position)
@@ -70,8 +145,8 @@ namespace Battleship.Implementations
         }
 
         private bool this[CellPosition position] {
-            get { return filled[position.Row, position.Column]; }
-            set { filled[position.Row, position.Column] = value; }
+            get { return field[position.Row, position.Column]; }
+            set { field[position.Row, position.Column] = value; }
         }
     }
 }
