@@ -43,43 +43,53 @@ namespace Battleship.Implementations
 
         #endregion
 
-        public bool Shoot(CellPosition target)
+        public ShotResult Shoot(CellPosition target)
         {
             if (!IsOnField(target))
-                return false;
+                return null;
 
             var cell = this[target];
             if (cell.Damaged)
-                return false;
+                return null;
             
             cell.Damaged = true;
 
             if (this[target].GetType() == typeof (ShipCell))
             {
                 var currentShip = ((ShipCell) this[target]).Ship;
+
                 if (currentShip.Killed)
                 {
                     survivedShips[currentShip.Type]--;
-                    foreach (var shipCellPosition in currentShip.Pieces.Select(x => x.Position))
-                        DamageEverythingAround(shipCellPosition);
-                    return true;
+                    var affectedCells = currentShip.Pieces
+                        .Select(x => x.Position)
+                        .SelectMany(DamageEverythingAround)
+                        .ToList();
+                    return ShotResult.Kill(target, affectedCells);
                 }
-
-                var diagonalNeighbours = target
-                    .ByAngleNeighbours
-                    .Where(IsOnField)
-                    .Select(position => this[position]);
-                foreach (var neighbour in diagonalNeighbours)
-                    neighbour.Damaged = true;
+                
+                return ShotResult.Hit(target, DamageEverythingConnectedByAngle(target));
             }
 
-            return true;
+            return ShotResult.Miss(target);
         }
 
-        private void DamageEverythingAround(CellPosition cell)
+        private IEnumerable<CellPosition> DamageEverythingAround(CellPosition cell)
         {
-            foreach (var neighbour in cell.AllNeighbours.Where(IsOnField))
+            foreach (var neighbour in cell.AllNeighbours.Where(IsOnField).Where(pos => !this[pos].Damaged))
+            {
                 this[neighbour].Damaged = true;
+                yield return neighbour;
+            }
+        }
+
+        private IEnumerable<CellPosition> DamageEverythingConnectedByAngle(CellPosition cell)
+        {
+            foreach (var neighbour in cell.ByAngleNeighbours.Where(IsOnField).Where(pos => !this[pos].Damaged))
+            {
+                this[neighbour].Damaged = true;
+                yield return neighbour;
+            }
         }
 
         public bool IsOnField(CellPosition cell)

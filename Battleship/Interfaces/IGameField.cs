@@ -7,7 +7,7 @@ namespace Battleship.Interfaces
     public interface IGameField : IRectangularReadonlyField<IGameCell>
     {
         GameRules Rules { get; }
-        bool Shoot(CellPosition target);
+        ShotResult Shoot(CellPosition target);
         IReadOnlyDictionary<ShipType, int> SurvivedShips { get; }
     }
 }
