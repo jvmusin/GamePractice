@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using Battleship.Implementations;
+using Battleship.Utilities;
 
 namespace Battleship.Interfaces
 {
-    public interface IBattleshipGameField : IRectangleReadonlyField<IGameCell>
+    public interface IBattleshipGameField : IRectangularReadonlyField<IGameCell>
     {
-        bool Shoot(int row, int column);
-        IReadOnlyDictionary<ShipType, int> GetSurvivedShips();
+        bool Shoot(CellPosition target);
+        IReadOnlyDictionary<ShipType, int> SurvivedShips { get; }
     }
 }

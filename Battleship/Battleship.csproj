@@ -59,6 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -72,13 +73,13 @@
     <Compile Include="Interfaces\IBattleshipGame.cs" />
     <Compile Include="Implementations\GameFieldBuilder.cs" />
     <Compile Include="Interfaces\ITurn.cs" />
-    <Compile Include="Utilities\RectangleReadonlyFieldExtensions.cs" />
-    <Compile Include="Utilities\BattleshipGameFieldExtensions.cs" />
+    <Compile Include="Utilities\IntExtensions.cs" />
+    <Compile Include="Utilities\RectangularReadonlyFieldExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Utilities\CellPosition.cs" />
     <Compile Include="Interfaces\IGameCell.cs" />
     <Compile Include="Interfaces\IBattleshipGameField.cs" />
-    <Compile Include="Interfaces\IRectangleReadonlyField.cs" />
+    <Compile Include="Interfaces\IRectangularReadonlyField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Ship.cs" />

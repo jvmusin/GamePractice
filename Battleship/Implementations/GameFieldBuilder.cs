@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Battleship.Interfaces;
 using Battleship.Utilities;
@@ -8,25 +9,21 @@ namespace Battleship.Implementations
 {
     public class GameFieldBuilder
     {
-        private readonly int height;
-        private readonly int width;
-        private readonly bool[,] ships;
+        private readonly Size size;
+        private readonly bool[,] filled;
         private readonly Dictionary<ShipType, int> shipsCounter;
 
-        public IReadOnlyDictionary<ShipType, int> ShipsCounter => shipsCounter; 
+        public IReadOnlyDictionary<ShipType, int> ShipsCounter => shipsCounter;
 
-        public GameFieldBuilder() : this(10, 10)
+        public GameFieldBuilder() : this(new Size(10, 10))
         {
         }
 
-        public GameFieldBuilder(int height, int width)
+        public GameFieldBuilder(Size size)
         {
-            this.height = height;
-            this.width = width;
-            ships = new bool[height,width];
-            shipsCounter = new Dictionary<ShipType, int>();
-            foreach (var type in (ShipType[]) Enum.GetValues(typeof (ShipType)))
-                shipsCounter[type] = type.GetLength();
+            filled = new bool[size.Height, size.Width];
+            var ships = (ShipType[]) Enum.GetValues(typeof (ShipType));
+            shipsCounter = ships.ToDictionary(x => x, x => x.GetLength());
         }
 
         public bool TryAddShipCell(CellPosition position)
@@ -53,30 +50,28 @@ namespace Battleship.Implementations
 
         public IBattleshipGameField Build()
         {
-            return new BattleshipGameField(10, 10,
-                (row, column) => new GameCell(ships[row, column]
+            return new BattleshipGameField(new Size(10, 10),
+                position => new GameCell(this[position]
                     ? CellType.Ship
                     : CellType.Empty));
         }
 
         private bool IsPositionValid(CellPosition position)
         {
-            return IsOnField(position) && !ships[position.Row, position.Column] &&
+            return IsOnField(position) && !this[position] &&
                    position.AllNeighbours.Where(IsOnField).All(pos => !this[pos]);
         }
 
         private bool IsOnField(CellPosition position)
         {
-            var row = position.Row;
-            var column = position.Column;
             return
-                0 <= row && row < height &&
-                0 <= column && column < width;
+                position.Row.IsInRange(0, size.Height) &&
+                position.Column.IsInRange(0, size.Width);
         }
 
         private bool this[CellPosition position] {
-            get { return ships[position.Row, position.Column]; }
-            set { ships[position.Row, position.Column] = value; }
+            get { return filled[position.Row, position.Column]; }
+            set { filled[position.Row, position.Column] = value; }
         }
     }
 }
