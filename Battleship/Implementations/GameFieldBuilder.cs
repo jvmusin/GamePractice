@@ -32,6 +32,9 @@ namespace Battleship.Implementations
         {
             if (!IsOnField(target) || this[target])
                 return false;
+            
+            if (HaveConnectedByAngleShip(target))
+                return false;
 
             var connectedShips = GetConnectedShips(target).ToList();
             var newShipLength = connectedShips.Sum(type => type.GetLength()) + 1;
@@ -40,8 +43,8 @@ namespace Battleship.Implementations
                 return false;
 
             var newShip = (ShipType) newShipLength;
-            if (shipsLeft[newShip] == 0)
-                return false;
+//            if (shipsLeft[newShip] == 0)
+//                return false;
 
             foreach (var destroyedShip in connectedShips)
                 shipsLeft[destroyedShip]++;
@@ -67,23 +70,28 @@ namespace Battleship.Implementations
 
             foreach (var ship in connectedShips)
                 shipsLeft[ship]--;
-            if (shipsLeft.Keys.Any(x => x < 0))
-            {
-                foreach (var ship in connectedShips)
-                    shipsLeft[ship]++;
-                this[target] = true;
-                return false;
-            }
+//            if (shipsLeft.Keys.Any(x => x < 0))
+//            {
+//                foreach (var ship in connectedShips)
+//                    shipsLeft[ship]++;
+//                this[target] = true;
+//                return false;
+//            }
 
             var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
             shipsLeft[oldShip]++;
             return true;
         }
 
+        private bool HaveConnectedByAngleShip(CellPosition position)
+        {
+            return position.ByAngleNeighbours.Where(IsOnField).Any(x => this[x]);
+        }
+
         private IEnumerable<ShipType> GetConnectedShips(CellPosition position)
         {
             return position.ByEdgeNeighbours
-                .Where(IsOnField)
+                .Where(x => IsOnField(x) && this[x])
                 .Select(CountConnectedCells)
                 .Cast<ShipType>();
         }
@@ -98,7 +106,7 @@ namespace Battleship.Implementations
             {
                 var current = queue.Dequeue();
                 var ways = current.ByEdgeNeighbours
-                    .Where(x => IsOnField(x) && !visited.Contains(x) && this[start]);
+                    .Where(x => IsOnField(x) && !visited.Contains(x) && this[x]);
                 foreach (var connected in ways)
                 {
                     visited.Add(connected);
