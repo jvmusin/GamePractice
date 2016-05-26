@@ -3,7 +3,7 @@ using Battleship.Interfaces;
 
 namespace Battleship.Implementations
 {
-    public class EmptyCell : IGameCell
+    public class EmptyCell : IEmptyCell
     {
         public CellPosition Position { get; }
         public bool Damaged { get; set; }

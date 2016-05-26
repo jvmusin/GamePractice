@@ -51,6 +51,7 @@
     <Compile Include="Implementations\ShipCell.cs" />
     <Compile Include="Implementations\ShotResult.cs" />
     <Compile Include="Implementations\ShotType.cs" />
+    <Compile Include="Interfaces\IEmptyCell.cs" />
     <Compile Include="Interfaces\IGameController.cs" />
     <Compile Include="Implementations\GameFieldBuilder.cs" />
     <Compile Include="Interfaces\IShipCell.cs" />

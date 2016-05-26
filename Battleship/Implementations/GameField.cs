@@ -13,14 +13,14 @@ namespace Battleship.Implementations
         public Size Size => Rules.FieldSize;
         public IReadOnlyDictionary<ShipType, int> SurvivedShips => survivedShips;
 
-        private readonly IGameCell[,] state;
+        private readonly IGameCell[,] field;
         private readonly Dictionary<ShipType, int> survivedShips;
 
         internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell)
         {
             Rules = rules;
             survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
-            state = new IGameCell[Size.Height, Size.Width];
+            field = new IGameCell[Size.Height, Size.Width];
             FillField(getCell);
         }
 
@@ -38,10 +38,9 @@ namespace Battleship.Implementations
             var currentCell = this[target];
             if (currentCell.Damaged)
                 return null;
-            
-            currentCell.Damaged = true;
+            this[target].Damaged = true;
 
-            if (currentCell.GetType() == typeof (IShipCell))
+            if (currentCell is IShipCell)
             {
                 var currentShip = ((IShipCell) currentCell).Ship;
 
@@ -78,17 +77,25 @@ namespace Battleship.Implementations
 
         public IGameCell this[CellPosition position]
         {
-            get { return state[position.Row, position.Column]; }
-            private set { state[position.Row, position.Column] = value; }
+            get { return field[position.Row, position.Column]; }
+            private set { field[position.Row, position.Column] = value; }
         }
 
         #region ToString, Equals and GetHashCode
 
         public override string ToString()
         {
-            var rows = Enumerable.Range(0, Size.Height)
-                .Select(row => string.Join("", this.GetRow(row)));
-            return string.Join("\n", rows);
+            var table = Enumerable.Range(0, Size.Height).Select(row => new char[Size.Width]).ToArray();
+            foreach (var position in this.EnumerateCellPositions())
+            {
+                var cell = this[position];
+                var symbol = '♥';
+                if (cell is IShipCell)
+                    symbol = cell.Damaged ? 'X' : '0';
+                else symbol = '.';
+                table[position.Row][position.Column] = symbol;
+            }
+            return string.Join("\n", table.Select(x => new string(x)));
         }
 
         protected bool Equals(IGameField other)

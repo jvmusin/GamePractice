@@ -171,6 +171,24 @@ namespace Battleship.Implementations
                 position.Column.IsInRange(0, FieldSize.Width);
         }
 
+        public IGameField GenerateRandomField(Random random)
+        {
+            while (true)
+            {
+                var cell = CellPosition.Random(random, FieldSize);
+                if (ShipsLeft.Values.Any(x => x < 0))
+                    TryRemoveShipCell(cell);
+                else
+                    TryAddShipCell(cell);
+
+                var newField = Build();
+                if (newField != null)
+                    return newField;
+            }
+        }
+
+        public IGameField GenerateRandomField() => GenerateRandomField(new Random());
+
         public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }
             private set { field[position.Row, position.Column] = value; }

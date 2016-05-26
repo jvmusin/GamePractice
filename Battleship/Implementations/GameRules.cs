@@ -52,7 +52,8 @@ namespace Battleship.Implementations
 
         protected bool Equals(GameRules other)
         {
-            return FieldSize.Equals(other.FieldSize) && 
+            return 
+                Equals(FieldSize, other.FieldSize) && 
                 Equals(ShipsCount, other.ShipsCount);
         }
 

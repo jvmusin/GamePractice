@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="CellPosition_Should.cs" />
     <Compile Include="GameFieldBuilder_Should.cs" />
+    <Compile Include="GameField_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

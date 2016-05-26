@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Battleship.Implementations
@@ -27,6 +29,13 @@ namespace Battleship.Implementations
         public IEnumerable<CellPosition> ByEdgeNeighbours => AllNeighbours.Except(ByAngleNeighbours);
 
         public CellPosition AddDelta(CellPosition delta) => new CellPosition(Row + delta.Row, Column + delta.Column);
+
+        public static CellPosition Random(Random rnd, Size size)
+        {
+            var row = rnd.Next(size.Height);
+            var column = rnd.Next(size.Width);
+            return  new CellPosition(row, column);
+        }
 
         protected bool Equals(CellPosition other)
         {
