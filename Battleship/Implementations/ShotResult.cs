@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Battleship.Implementations
@@ -11,12 +12,13 @@ namespace Battleship.Implementations
 
         private ShotResult(CellPosition target, ShotType type, IEnumerable<CellPosition> affectedCells)
         {
-            Target = target;
-            Type = type;
-
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
             if (affectedCells == null)
                 affectedCells = Enumerable.Empty<CellPosition>();
 
+            Target = target;
+            Type = type;
             AffectedCells = affectedCells.ToList();
         }
 

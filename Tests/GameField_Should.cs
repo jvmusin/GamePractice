@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Battleship.Implementations;
@@ -140,6 +141,13 @@ namespace Tests
         #endregion
 
         #region Shoot method tests
+
+        [Test]
+        public void Fail_IfTargetIsNull()
+        {
+            Action act = () => field.Shoot(null);
+            act.ShouldThrow<Exception>();
+        }
 
         [Test]
         public void ReturnNull_IfTargetIsOutsideTheField()

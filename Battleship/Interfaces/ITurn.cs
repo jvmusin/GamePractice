@@ -4,6 +4,6 @@ namespace Battleship.Interfaces
 {
     public interface ITurn
     {
-        CellPosition ShotPosition { get; }
+        CellPosition Target { get; }
     }
 }
