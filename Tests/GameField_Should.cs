@@ -41,7 +41,7 @@ namespace Tests
 
         #endregion
 
-        #region Survived ships tests
+        #region Survived ships counter tests
 
         [Test]
         public void ReturnCorrectSurvivedShips_AfterCreating()
@@ -81,9 +81,183 @@ namespace Tests
 
         #endregion
 
+        #region IsOnField method tests
+
+        [Test]
+        public void ReturnTrue_IfPositionIsInsideTheField()
+        {
+            var position = new CellPosition(4, 5);
+            field.IsOnField(position).Should().BeTrue();
+        }
+
+        [Test]
+        public void ReturnFalse_IfPositionIsOutsideTheField()
+        {
+            var position = new CellPosition(50, 9);
+            field.IsOnField(position).Should().BeFalse();
+        }
+
+        [Test]
+        public void ReturnTrue_IfPositionIsOnTheBorder()
+        {
+            var position = new CellPosition(9, 9);
+            field.IsOnField(position).Should().BeTrue();
+        }
+
+        [Test]
+        public void ReturnFalse_IfPositionIsAtTheOuterAngle()
+        {
+            var position = new CellPosition(10, 10);
+            field.IsOnField(position).Should().BeFalse();
+        }
+
+        [Test]
+        public void ReturnFalse_IfPositionHasNegativeCoordinates()
+        {
+            var position = new CellPosition(-1, 5);
+            field.IsOnField(position).Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Indexer tests
+
+        [Test]
+        public void ReturnCorrectValuesByIndex()
+        {
+            foreach (var position in field.EnumerateCellPositions())
+            {
+                var cell = field[position];
+                var symbolInField = SampleField[position.Row][position.Column];
+
+                if (symbolInField == 'X') cell.Should().BeAssignableTo<IShipCell>();
+                else cell.Should().BeAssignableTo<IEmptyCell>();
+
+                cell.Damaged.Should().BeFalse();
+            }
+        }
+
+        #endregion
+
+        #region Shoot method tests
+
+        [Test]
+        public void ReturnNull_IfTargetIsOutsideTheField()
+        {
+            var target = new CellPosition(2, 13);
+            field.Shoot(target).Should().BeNull();
+        }
+
+        [Test]
+        public void ReturnShotResult_IfTargetIsInsideTheField()
+        {
+            var target = new CellPosition(4, 6);
+            field.Shoot(target).Should().NotBeNull();
+        }
+
+        [Test]
+        public void ReturnNull_IfTargetIsDamaged()
+        {
+            var target = new CellPosition(3, 3);
+            field.Shoot(target);
+            field.Shoot(target).Should().BeNull();
+        }
+
+        [Test]
+        public void ReturnRightShotPosition()
+        {
+            var target = new CellPosition(3, 6);
+            field.Shoot(target).Target.Should().Be(target);
+        }
+
+        [Test]
+        public void ReturnDamagedCell_IfWeShotIt()
+        {
+            var target = new CellPosition(4, 4);
+            field.Shoot(target);
+            field[target].Damaged.Should().BeTrue();
+        }
+
+        [Test]
+        public void ReturnCorrectShotType_WhenWeMissed()
+        {
+            var target = new CellPosition(0, 3);
+            field.Shoot(target).Type.Should().Be(ShotType.Miss);
+        }
+
+        [Test]
+        public void ReturnCorrectShotType_WhenWeHit()
+        {
+            var target = new CellPosition(0, 1);
+            field.Shoot(target).Type.Should().Be(ShotType.Hit);
+        }
+
+        [Test]
+        public void ReturnCorrectShotType_WhenWeKilled()
+        {
+            var target = new CellPosition(0, 4);
+            field.Shoot(target).Type.Should().Be(ShotType.Kill);
+        }
+
+        [Test]
+        public void ReturnEmptyAffectedCells_WhenWeMissed()
+        {
+            var target = new CellPosition(2, 1);
+            field.Shoot(target).AffectedCells.Should().BeEmpty();
+        }
+
+        [Test]
+        public void ReturnByAngleConnectedCells_WhenWeHit()
+        {
+            var target = new CellPosition(9, 8);
+            var affectedCells = new[] {new CellPosition(8, 7), new CellPosition(8, 9)};
+
+            field.Shoot(target).AffectedCells.Should().BeEquivalentTo(affectedCells);
+        }
+
+        [Test]
+        public void ReturnCellsAround_WhenWeKilled()
+        {
+            var ship = new[]
+            {
+                new CellPosition(4, 3),
+                new CellPosition(4, 4),
+                new CellPosition(4, 5) 
+            };
+
+            var aroundCells = new List<CellPosition>();
+            for (var row = 3; row <= 5; row += 2)
+                for (var column = 2; column <= 6; column++)
+                    aroundCells.Add(new CellPosition(row, column));
+            aroundCells.Add(new CellPosition(4, 2));
+            aroundCells.Add(new CellPosition(4, 6));
+
+            var allAffectedCells = ship.SelectMany(pos => field.Shoot(pos).AffectedCells);
+            allAffectedCells.Should().BeEquivalentTo(aroundCells);
+        }
+
+        [Test]
+        public void MarkKilledShipAsKilled()
+        {
+            var ship = new[]
+            {
+                new CellPosition(4, 3),
+                new CellPosition(4, 4),
+                new CellPosition(4, 5)
+            };
+            foreach (var shipCell in ship)
+                field.Shoot(shipCell);
+
+            foreach (var shipCell in ship)
+                ((IShipCell) field[shipCell]).Ship.Killed.Should().BeTrue();
+        }
+
+        #endregion
+
         #region Field building
 
-        private static readonly string[] SampleField = {
+        private static readonly string[] SampleField =
+        {
             ".X..X...X.",
             ".X........",
             "...XXXX...",

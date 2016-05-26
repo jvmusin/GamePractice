@@ -17,7 +17,7 @@ namespace Battleship.Implementations
 
         public Ship(IEnumerable<CellPosition> positions)
         {
-            pieces = positions.Select((pos, i) => new ShipCell(pos, this)).ToList();
+            pieces = positions.Select(pos => new ShipCell(pos, this)).ToList();
             Type = (ShipType) pieces.Count;
         }
     }
