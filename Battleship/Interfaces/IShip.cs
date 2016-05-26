@@ -1,4 +1,5 @@
-﻿using Battleship.Implementations;
+﻿using System.Collections.Generic;
+using Battleship.Implementations;
 
 namespace Battleship.Interfaces
 {
@@ -10,6 +11,6 @@ namespace Battleship.Interfaces
         int Health { get; }
         bool Killed { get; }
 
-        IGameCell GetPiece(int index);
+        IEnumerable<IGameCell> Pieces { get; } 
     }
 }
