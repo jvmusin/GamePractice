@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
@@ -53,9 +54,12 @@
     <Compile Include="Implementations\ShotType.cs" />
     <Compile Include="Implementations\GameController.cs" />
     <Compile Include="Interfaces\IEmptyCell.cs" />
+    <Compile Include="Interfaces\IGameFieldKnowledge.cs" />
     <Compile Include="Interfaces\IGameController.cs" />
     <Compile Include="Implementations\GameFieldBuilder.cs" />
     <Compile Include="Interfaces\IShipCell.cs" />
+    <Compile Include="Interfaces\IPlayer.cs" />
+    <Compile Include="Implementations\Player.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Implementations\CellPosition.cs" />

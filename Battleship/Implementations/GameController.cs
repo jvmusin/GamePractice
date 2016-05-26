@@ -6,23 +6,25 @@ namespace Battleship.Implementations
 {
     public class GameController : IGameController
     {
-        public IGameField FirstPlayerField { get; }
-        public IGameField SecondPlayerField { get; }
-        private IGameField EnemyField => FirstPlayerTurns ? SecondPlayerField : FirstPlayerField;
+        public IPlayer FirstPlayer { get; }
+        public IPlayer SecondPlayer { get; }
+
+        public IPlayer CurrentPlayer => FirstPlayerTurns ? FirstPlayer : SecondPlayer;
+        public IPlayer OpponentPlayer => FirstPlayerTurns ? SecondPlayer : FirstPlayer;
 
         public bool GameFinished { get; private set; }
 
         public bool FirstPlayerTurns { get; private set; }
 
-        public GameController(IGameField firstPlayerField, IGameField secondPlayerField)
+        public GameController(IPlayer firstPlayer, IPlayer secondPlayer)
         {
-            if (firstPlayerField == null)
-                throw new ArgumentNullException(nameof(firstPlayerField));
-            if (secondPlayerField == null)
-                throw new ArgumentNullException(nameof(secondPlayerField));
+            if (firstPlayer == null)
+                throw new ArgumentNullException(nameof(firstPlayer));
+            if (secondPlayer == null)
+                throw new ArgumentNullException(nameof(secondPlayer));
 
-            FirstPlayerField = firstPlayerField;
-            SecondPlayerField = secondPlayerField;
+            FirstPlayer = firstPlayer;
+            SecondPlayer = secondPlayer;
 
             GameFinished = false;
             FirstPlayerTurns = true;
@@ -30,13 +32,19 @@ namespace Battleship.Implementations
         
         public ShotResult Shoot(CellPosition target)
         {
-            var result = EnemyField.Shoot(target);
+            var result = OpponentPlayer.SelfField.Shoot(target);
+            if (result == null)
+                return null;
 
-            var everythingKilled = EnemyField.SurvivedShips.Values.All(x => x == 0);
+            var everythingKilled = OpponentPlayer.SelfField.SurvivedShips.Values.All(x => x == 0);
             if (everythingKilled)
                 GameFinished = true;
 
-            if (!GameFinished && result != null && result.Type != ShotType.Miss)
+            foreach (var cell in result.AffectedCells)
+                CurrentPlayer.OpponentFieldKnowledge[cell] = false;
+            CurrentPlayer.OpponentFieldKnowledge[result.Target] = result.Type != ShotType.Miss;
+
+            if (!GameFinished && result.Type != ShotType.Miss)
                 FirstPlayerTurns ^= true;
             return result;
         }

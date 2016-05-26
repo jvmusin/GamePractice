@@ -2,6 +2,7 @@
 {
     public enum ShipType
     {
+        None            = 0,
         Submarine       = 1,
         Destroyer       = 2,
         Cruiser         = 3,

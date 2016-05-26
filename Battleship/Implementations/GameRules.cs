@@ -45,10 +45,12 @@ namespace Battleship.Implementations
                 var fieldSize = new Size(10, 10);
                 var shipCount = Enum.GetValues(typeof (ShipType))
                     .Cast<ShipType>()
-                    .ToDictionary(x => x, x => 5 - x.GetLength());
+                    .ToDictionary(x => x, x => (x == ShipType.None) ? 0 : 5 - x.GetLength());
                 return new GameRules(fieldSize, shipCount);
             }
         }
+
+        public static GameRules EmptyField => new GameRules(new Size(10, 10), new Dictionary<ShipType, int>());
 
         protected bool Equals(GameRules other)
         {

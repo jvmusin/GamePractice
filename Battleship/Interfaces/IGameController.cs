@@ -4,11 +4,16 @@ namespace Battleship.Interfaces
 {
     public interface IGameController
     {
-        IGameField FirstPlayerField { get; }
-        IGameField SecondPlayerField { get; }
+        IPlayer FirstPlayer { get; }
+        IPlayer SecondPlayer { get; }
+
+        IPlayer CurrentPlayer { get; }
+        IPlayer OpponentPlayer { get; }
+
         bool GameFinished { get; }
 
         bool FirstPlayerTurns { get; }
+
         ShotResult Shoot(CellPosition target);
     }
 }
