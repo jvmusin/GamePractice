@@ -16,55 +16,41 @@ namespace Battleship.Implementations
         private readonly IGameCell[,] state;
         private readonly Dictionary<ShipType, int> survivedShips;
 
-        #region Constructors
-
-        internal GameField(GameRules rules)
+        internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell)
         {
             Rules = rules;
             survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
-
             state = new IGameCell[Size.Height, Size.Width];
-            foreach (var position in this.EnumerateCellPositions())
-                this[position] = new EmptyCell(position);
+            FillField(getCell);
         }
 
-        internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell) : this(rules)
+        private void FillField(Func<CellPosition, IGameCell> getCell)
         {
             foreach (var position in this.EnumerateCellPositions())
-                if ((this[position] = getCell(position)) == null)
-                    throw new NullReferenceException("Ship can't be null");
+                this[position] = getCell(position);
         }
-
-        internal GameField(IGameField source) : this(source.Rules)
-        {
-            foreach (var position in source.EnumerateCellPositions())
-                this[position] = source[position];
-        }
-
-        #endregion
 
         public ShotResult Shoot(CellPosition target)
         {
             if (!IsOnField(target))
                 return null;
 
-            var cell = this[target];
-            if (cell.Damaged)
+            var currentCell = this[target];
+            if (currentCell.Damaged)
                 return null;
             
-            cell.Damaged = true;
+            currentCell.Damaged = true;
 
-            if (this[target].GetType() == typeof (ShipCell))
+            if (currentCell.GetType() == typeof (IShipCell))
             {
-                var currentShip = ((ShipCell) this[target]).Ship;
+                var currentShip = ((IShipCell) currentCell).Ship;
 
                 if (currentShip.Killed)
                 {
                     survivedShips[currentShip.Type]--;
                     var affectedCells = currentShip.Pieces
-                        .Select(x => x.Position)
-                        .SelectMany(x => Damage(x.AllNeighbours))
-                        .ToList();
+                        .Select(x => x.Position.AllNeighbours)
+                        .SelectMany(Damage);
                     return ShotResult.Kill(target, affectedCells);
                 }
                 

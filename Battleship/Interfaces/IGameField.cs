@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Battleship.Implementations;
-using Battleship.Utilities;
 
 namespace Battleship.Interfaces
 {
