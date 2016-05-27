@@ -89,13 +89,13 @@ namespace Battleship.Implementations
             foreach (var position in this.EnumerateCellPositions())
             {
                 var cell = this[position];
-                var symbol = '♥';
+                char symbol;
                 if (cell is IShipCell)
-                    symbol = cell.Damaged ? 'X' : '0';
-                else symbol = '.';
+                    symbol = cell.Damaged ? 'X' : 'O';
+                else symbol = cell.Damaged ? '♥' : '.';
                 table[position.Row][position.Column] = symbol;
             }
-            return string.Join("\n", table.Select(x => new string(x)));
+            return string.Join("\n", table.Select((x, i) => new string(x)));
         }
 
         protected bool Equals(IGameField other)

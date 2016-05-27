@@ -4,6 +4,8 @@ namespace Battleship.Interfaces
 {
     public interface IGameController
     {
+        GameRules Rules { get; }
+
         IPlayer FirstPlayer { get; }
         IPlayer SecondPlayer { get; }
 

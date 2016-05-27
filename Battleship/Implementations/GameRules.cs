@@ -43,10 +43,10 @@ namespace Battleship.Implementations
             get
             {
                 var fieldSize = new Size(10, 10);
-                var shipCount = Enum.GetValues(typeof (ShipType))
+                var shipsCount = Enum.GetValues(typeof (ShipType))
                     .Cast<ShipType>()
-                    .ToDictionary(x => x, x => (x == ShipType.None) ? 0 : 5 - x.GetLength());
-                return new GameRules(fieldSize, shipCount);
+                    .ToDictionary(x => x, x => 5 - x.GetLength());
+                return new GameRules(fieldSize, shipsCount);
             }
         }
 
@@ -54,9 +54,10 @@ namespace Battleship.Implementations
 
         protected bool Equals(GameRules other)
         {
-            return 
-                Equals(FieldSize, other.FieldSize) && 
-                Equals(ShipsCount, other.ShipsCount);
+            return
+                Equals(FieldSize, other.FieldSize) &&
+                Equals(ShipsCount.Count, other.ShipsCount.Count) &&
+                ShipsCount.All(x => other.ShipsCount[x.Key] == x.Value);
         }
 
         public override bool Equals(object obj)

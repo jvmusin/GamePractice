@@ -37,6 +37,11 @@ namespace Battleship.Implementations
             return  new CellPosition(row, column);
         }
 
+        public static CellPosition Random(Size size)
+        {
+            return Random(new Random(), size);
+        }
+
         protected bool Equals(CellPosition other)
         {
             return

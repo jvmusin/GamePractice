@@ -6,6 +6,8 @@ namespace Battleship.Implementations
 {
     public class GameController : IGameController
     {
+        public GameRules Rules { get; }
+
         public IPlayer FirstPlayer { get; }
         public IPlayer SecondPlayer { get; }
 
@@ -22,6 +24,13 @@ namespace Battleship.Implementations
                 throw new ArgumentNullException(nameof(firstPlayer));
             if (secondPlayer == null)
                 throw new ArgumentNullException(nameof(secondPlayer));
+
+            var firstPlayerRules = firstPlayer.SelfField.Rules;
+            var secondPlayerRules = secondPlayer.SelfField.Rules;
+            if (!firstPlayerRules.Equals(secondPlayerRules))
+                throw new ArgumentException("Rules shouldn't differ");
+
+            Rules = firstPlayerRules;
 
             FirstPlayer = firstPlayer;
             SecondPlayer = secondPlayer;
@@ -44,7 +53,7 @@ namespace Battleship.Implementations
                 CurrentPlayer.OpponentFieldKnowledge[cell] = false;
             CurrentPlayer.OpponentFieldKnowledge[result.Target] = result.Type != ShotType.Miss;
 
-            if (!GameFinished && result.Type != ShotType.Miss)
+            if (!GameFinished && result.Type == ShotType.Miss)
                 FirstPlayerTurns ^= true;
             return result;
         }
