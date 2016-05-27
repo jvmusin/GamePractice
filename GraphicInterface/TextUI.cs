@@ -4,12 +4,12 @@ using Battleship.Interfaces;
 
 namespace GraphicInterface
 {
-    public class TextGUI
+    public class TextUI
     {
         private readonly IGameController controller;
         private readonly TextWriter writer;
 
-        public TextGUI(IGameController controller, TextWriter writer)
+        public TextUI(IGameController controller, TextWriter writer)
         {
             this.controller = controller;
             this.writer = writer;

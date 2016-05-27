@@ -18,7 +18,7 @@ namespace GraphicInterface
             var opponent = new Player(opponentField);
 
             var controller = new GameController(me, opponent);
-            var gui = new TextGUI(controller, Console.Out);
+            var gui = new TextUI(controller, Console.Out);
 
             Func<IPlayer, CellPosition> getTarget = player
                 => player == me
@@ -28,7 +28,7 @@ namespace GraphicInterface
             Run(controller, getTarget, gui);
         }
 
-        public static void Run(IGameController controller, Func<IPlayer, CellPosition> getTarget, TextGUI gui)
+        public static void Run(IGameController controller, Func<IPlayer, CellPosition> getTarget, TextUI gui)
         {
             gui.DrawCurrentState();
             while (!controller.GameFinished)
