@@ -10,7 +10,7 @@ namespace Battleship
             var random = new Random();
             for (var i = 0; i < 10; i++)
             {
-                Console.WriteLine(new GameFieldBuilder().GenerateRandomField(random));
+                Console.WriteLine(new GameFieldBuilder().GenerateRandomField());
                 Console.WriteLine();
                 Console.WriteLine("-------------");
                 Console.WriteLine();

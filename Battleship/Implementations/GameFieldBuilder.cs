@@ -7,8 +7,10 @@ using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class GameFieldBuilder
+    public class GameFieldBuilder : IGameFieldBuilder
     {
+        private static readonly Random Random = new Random();
+
         public GameRules Rules { get; }
         public Size FieldSize => Rules.FieldSize;
 
@@ -171,11 +173,11 @@ namespace Battleship.Implementations
                 position.Column.IsInRange(0, FieldSize.Width);
         }
 
-        public IGameField GenerateRandomField(Random random)
+        public IGameField GenerateRandomField()
         {
             while (true)
             {
-                var cell = CellPosition.Random(random, FieldSize);
+                var cell = CellPosition.Random(Random, FieldSize);
                 if (ShipsLeft.Values.Any(x => x < 0))
                     TryRemoveShipCell(cell);
                 else
@@ -186,8 +188,6 @@ namespace Battleship.Implementations
                     return newField;
             }
         }
-
-        public IGameField GenerateRandomField() => GenerateRandomField(new Random());
 
         public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }
