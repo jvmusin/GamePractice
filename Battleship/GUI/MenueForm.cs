@@ -5,7 +5,6 @@ namespace Battleship.GUI
 {
     public class MenueForm : Form
     {
-        private const int ButtonsCount = 1;
         private const int SideFill = 100;
 
         public MenueForm()
