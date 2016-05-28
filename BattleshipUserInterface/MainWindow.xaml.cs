@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Battleship.Implementations;
 using Battleship.Interfaces;
-using System.Drawing;
-using System.Windows;
 using Ninject;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Size = System.Drawing.Size;
 
-namespace TestGraphicUserInterface
+namespace BattleshipUserInterface
 {
     public partial class MainWindow
     {
@@ -22,7 +18,7 @@ namespace TestGraphicUserInterface
         private readonly Button[,] selfFieldGridLabels;
         private readonly Button[,] opponentFieldGridLabels;
 
-        private readonly Size FieldSize = new Size(10, 10);
+        private readonly Size fieldSize = new Size(10, 10);
 
         public MainWindow()
         {
@@ -35,15 +31,15 @@ namespace TestGraphicUserInterface
 
         private Button[,] SetUpField(Grid grid)
         {
-            var result = new Button[FieldSize.Height, FieldSize.Width];
+            var result = new Button[fieldSize.Height, fieldSize.Width];
 
             grid.HorizontalAlignment = HorizontalAlignment.Stretch;
             grid.VerticalAlignment = VerticalAlignment.Stretch;
-            for (var row = 0; row < FieldSize.Height; row++)
+            for (var row = 0; row < fieldSize.Height; row++)
             {
                 grid.RowDefinitions.Add(new RowDefinition { MinHeight = 10, Height = new GridLength(30) });
                 grid.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 10, Width = new GridLength(30) });
-                for (var column = 0; column < FieldSize.Width; column++)
+                for (var column = 0; column < fieldSize.Width; column++)
                 {
                     var label = result[row, column] = new Button
                     {
@@ -100,11 +96,11 @@ namespace TestGraphicUserInterface
             var shipCell = cell as ShipCell;
             if (shipCell != null)
             {
-//                return shipCell.Ship.Killed
-//                    ? Brushes.Red
-//                    : shipCell.Damaged
-//                        ? Brushes.Yellow
-//                        : Brushes.Green;
+                //                return shipCell.Ship.Killed
+                //                    ? Brushes.Red
+                //                    : shipCell.Damaged
+                //                        ? Brushes.Yellow
+                //                        : Brushes.Green;
                 return shipCell.Damaged
                         ? Brushes.Yellow
                         : Brushes.Green;

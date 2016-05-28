@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphicUserInterface", "GraphicInterface\GraphicUserInterface.csproj", "{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphicUserInterface", "TestGraphicUserInterface\TestGraphicUserInterface.csproj", "{5016B56B-B823-42E8-B685-1FC822913898}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleshipUserInterface", "BattleshipUserInterface\BattleshipUserInterface.csproj", "{ACB43F0B-648B-445A-BB36-5E21345D0F9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5016B56B-B823-42E8-B685-1FC822913898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5016B56B-B823-42E8-B685-1FC822913898}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5016B56B-B823-42E8-B685-1FC822913898}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5016B56B-B823-42E8-B685-1FC822913898}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
