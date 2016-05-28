@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5C105578-AE2A-405C-8F61-AC800A8A3E7F}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Battleship</RootNamespace>
     <AssemblyName>Battleship</AssemblyName>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,7 +52,7 @@
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
-    <Compile Include="Implementations\IGameFieldBuilder.cs" />
+    <Compile Include="Interfaces\IGameFieldBuilder.cs" />
     <Compile Include="Implementations\ShipCell.cs" />
     <Compile Include="Implementations\ShotResult.cs" />
     <Compile Include="Implementations\ShotType.cs" />
@@ -69,7 +72,6 @@
     <Compile Include="Interfaces\IGameCell.cs" />
     <Compile Include="Interfaces\IGameField.cs" />
     <Compile Include="Interfaces\IRectangularReadonlyField.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Ship.cs" />
     <Compile Include="Implementations\ShipType.cs" />

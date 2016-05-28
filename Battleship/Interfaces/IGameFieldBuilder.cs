@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using Battleship.Interfaces;
+using Battleship.Implementations;
 
-namespace Battleship.Implementations
+namespace Battleship.Interfaces
 {
     public interface IGameFieldBuilder
     {
