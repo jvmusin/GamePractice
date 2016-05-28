@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Ninject;
@@ -25,11 +26,11 @@ namespace BattleshipUserInterface
             kernel = InitKernel();
             InitializeComponent();
 
-            selfFieldGridLabels = SetUpField(SelfGrid);
-            opponentFieldGridLabels = SetUpField(OpponentGrid);
+            selfFieldGridLabels = SetUpField(SelfGrid, false);
+            opponentFieldGridLabels = SetUpField(OpponentGrid, true);
         }
 
-        private Button[,] SetUpField(Grid grid)
+        private Button[,] SetUpField(Grid grid, bool shouldBeClickable)
         {
             var result = new Button[fieldSize.Height, fieldSize.Width];
 
@@ -41,7 +42,7 @@ namespace BattleshipUserInterface
                 grid.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 10, Width = new GridLength(30) });
                 for (var column = 0; column < fieldSize.Width; column++)
                 {
-                    var label = result[row, column] = new Button
+                    var button = result[row, column] = new Button
                     {
                         HorizontalContentAlignment = HorizontalAlignment.Center,
                         VerticalContentAlignment = VerticalAlignment.Center,
@@ -52,25 +53,29 @@ namespace BattleshipUserInterface
                         MinWidth = 50,
                         MinHeight = 50
                     };
-                    grid.Children.Add(label);
-                    Grid.SetRow(label, row);
-                    Grid.SetColumn(label, column);
+                    grid.Children.Add(button);
+                    Grid.SetRow(button, row);
+                    Grid.SetColumn(button, column);
 
-                    var row0 = row;
-                    var column0 = column;
-                    label.Click += (sender, args) =>
-                    {
-                        controller.Shoot(new CellPosition(row0, column0));
-                        while (!controller.GameFinished && !controller.FirstPlayerTurns)
-                            controller.Shoot(controller.CurrentPlayer.NextTarget);
-                        UpdatePlayerGrids(controller.FirstPlayer);
-                        if (controller.GameFinished)
-                            MessageBox.Show(controller.FirstPlayerTurns ? "You win!" : "You lost =(");
-                    };
+                    if (shouldBeClickable)
+                        AddTurnOnClick(button, row, column);
                 }
             }
 
             return result;
+        }
+
+        private void AddTurnOnClick(ButtonBase button, int row, int column)
+        {
+            button.Click += (sender, args) =>
+            {
+                controller.Shoot(new CellPosition(row, column));
+                while (!controller.GameFinished && !controller.FirstPlayerTurns)
+                    controller.Shoot(controller.CurrentPlayer.NextTarget);
+                UpdatePlayerGrids(controller.FirstPlayer);
+                if (controller.GameFinished)
+                    MessageBox.Show(controller.FirstPlayerTurns ? "You win!" : "You lost =(");
+            };
         }
 
         private static void InitGrid<T>(Button[,] gridLabels, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
