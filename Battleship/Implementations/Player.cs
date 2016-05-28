@@ -15,7 +15,7 @@ namespace Battleship.Implementations
             OpponentFieldKnowledge = new GameFieldKnowledge(SelfField.Size);
         }
 
-        public Player(IGameField selfField) : this(selfField, () => CellPosition.Random(selfField.Size)) { }
+//        public Player(IGameField selfField) : this(selfField, () => CellPosition.Random(selfField.Size)) { }
 
         private readonly Func<CellPosition> nextTarget;
         public CellPosition NextTarget => nextTarget();

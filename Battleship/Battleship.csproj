@@ -44,12 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementations\ConsolePlayer.cs" />
     <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
     <Compile Include="Implementations\IGameFieldBuilder.cs" />
+    <Compile Include="Implementations\RandomPlayer.cs" />
     <Compile Include="Implementations\ShipCell.cs" />
     <Compile Include="Implementations\ShotResult.cs" />
     <Compile Include="Implementations\ShotType.cs" />
