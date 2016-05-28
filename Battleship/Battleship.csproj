@@ -44,14 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementations\ConsolePlayer.cs" />
     <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
     <Compile Include="Implementations\IGameFieldBuilder.cs" />
-    <Compile Include="Implementations\RandomPlayer.cs" />
     <Compile Include="Implementations\ShipCell.cs" />
     <Compile Include="Implementations\ShotResult.cs" />
     <Compile Include="Implementations\ShotType.cs" />
@@ -60,9 +58,11 @@
     <Compile Include="Interfaces\IGameFieldKnowledge.cs" />
     <Compile Include="Interfaces\IGameController.cs" />
     <Compile Include="Implementations\GameFieldBuilder.cs" />
+    <Compile Include="Interfaces\IPlayerFactory.cs" />
     <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Implementations\Player.cs" />
+    <Compile Include="Implementations\PlayerFactory.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Implementations\CellPosition.cs" />

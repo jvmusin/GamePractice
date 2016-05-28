@@ -1,10 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Ninject;
-using Ninject.Extensions.Conventions;
+
 namespace GraphicInterface
 {
     public class Program
@@ -24,12 +22,10 @@ namespace GraphicInterface
 
             kernel.Bind<IGameFieldBuilder>().To<GameFieldBuilder>();
             kernel.Bind<IGameField>().ToMethod(context => context.Kernel.Get<IGameFieldBuilder>().GenerateRandomField());
-
-//            kernel.Bind<IGameController>().To<GameController>()
-//                .WithConstructorArgument("firstPlayer", context => context.Kernel.Get<ConsolePlayer>())
-//                .WithConstructorArgument("secondPlayer", context => context.Kernel.Get<RandomPlayer>());
-            var me = kernel.Get<ConsolePlayer>();
-            var opponent = kernel.Get<RandomPlayer>();
+            kernel.Bind<IPlayerFactory>().To<PlayerFactory>();
+            
+            var me = kernel.Get<IPlayerFactory>().CreateConsolePlayer(kernel.Get<IGameField>());
+            var opponent = kernel.Get<IPlayerFactory>().CreateRandomPlayer(kernel.Get<IGameField>());
             kernel.Bind<IGameController>().ToConstant(new GameController(me, opponent));
 
             kernel.Bind<IGraphicUserInterface>().To<TextUI>()
