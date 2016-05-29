@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Battleship.Implementations;
 using Battleship.Interfaces;
@@ -29,6 +31,8 @@ namespace BattleshipUserInterface
 
             selfFieldCells = SetUpField(SelfGrid, false);
             opponentFieldCells = SetUpField(OpponentGrid, true);
+
+            CreateNewGameHandle(null, null);
         }
 
         private Rectangle[,] SetUpField(Grid field, bool shouldBeClickable)
@@ -105,10 +109,11 @@ namespace BattleshipUserInterface
             };
         }
 
-        private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
+        private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Color> getColor)
         {
             foreach (var position in field.EnumerateCellPositions())
-                cells[position.Row, position.Column].Fill = getColor(field[position]);
+                cells[position.Row, position.Column].Fill 
+                    = new SolidColorBrush(getColor(field[position]));
         }
 
         private void CreateNewGameHandle(object sender, RoutedEventArgs e)
@@ -123,25 +128,33 @@ namespace BattleshipUserInterface
             ColorCells(opponentFieldCells, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
         }
 
-        private static readonly Func<IGameCell, Brush> SelfFieldColorer = cell =>
+        private static readonly Func<IGameCell, Color> SelfFieldColorer = cell =>
         {
             var shipCell = cell as ShipCell;
             if (shipCell != null)
             {
                 return shipCell.Damaged
-                        ? Brushes.Yellow
-                        : Brushes.Green;
+                    ? FromHex("#750529")
+                    : FromHex("#F12869");
             }
-            return cell.Damaged ? Brushes.Gray : Brushes.LightGray;
+            return cell.Damaged
+                ? FromHex("#CEBDC9")
+                : FromHex("#FFDCE7");
         };
-        private static readonly Func<bool?, Brush> OpponentFieldColorer = cell =>
+
+        private static readonly Func<bool?, Color> OpponentFieldColorer = cell =>
         {
             return cell == null
-                ? Brushes.Black
+                ? FromHex("#C4FE90")
                 : cell == true
-                    ? Brushes.Green
-                    : Brushes.Red;
+                    ? FromHex("#3A7505")
+                    : FromHex("#B7CBA8");
         };
+
+        private static Color FromHex(string hexColor)
+        {
+            return (Color) ColorConverter.ConvertFromString(hexColor);
+        }
 
         private static IKernel InitKernel()
         {

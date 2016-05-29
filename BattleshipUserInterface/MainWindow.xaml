@@ -5,28 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BattleshipUserInterface"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="730" ResizeMode="NoResize">
-    <StackPanel Orientation="Vertical" Margin="20">
+        Title="MainWindow" Height="570" Width="850" Background="#EFFEE1">
+    <StackPanel Orientation="Vertical" Margin="10, 15, 10, 10">
 
-        <Button Click="CreateNewGameHandle" HorizontalAlignment="Center" VerticalAlignment="Center">Create new game</Button>
-        
-        <StackPanel Orientation="Horizontal" Margin="20" HorizontalAlignment="Center">
-            
-            <StackPanel Orientation="Vertical">
+        <Border Height="55" Width="450" Margin="30, 10, 30, 10" BorderThickness="5" BorderBrush="#87F228">
+            <Grid>
+                <Rectangle Fill="#C4FE90"/>
+                <TextBlock Text="Ваш ход" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#3A7505"></TextBlock>
+            </Grid>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+            <StackPanel Orientation="Vertical" Margin="5, 5, 10, 5">
                 <Label HorizontalAlignment="Center">Self field</Label>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="LightGreen" BorderThickness="4">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#F12869" BorderThickness="5">
                     <Grid x:Name="SelfGrid"/>
                 </Border>
             </StackPanel>
-            
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+            <StackPanel Orientation="Vertical" Margin="10, 5, 5, 5">
                 <Label HorizontalAlignment="Center">Opponent field knowledge</Label>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="PaleVioletRed" BorderThickness="4">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#3A7505" BorderThickness="5">
                     <Grid x:Name="OpponentGrid"/>
                 </Border>
             </StackPanel>
-            
+
         </StackPanel>
-        
+
+        <Border Height="55" Width="150" Margin="0, 20, 20, 0" BorderThickness="5" BorderBrush="#F12869" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Grid>
+                <Rectangle Fill="#FE90B3"/>
+                <TextBlock Text="Выход" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#750529"></TextBlock>
+            </Grid>
+        </Border>
+
     </StackPanel>
 </Window>
+
+
+
