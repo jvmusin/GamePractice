@@ -13,13 +13,36 @@
         <Border Height="55" Width="450" Margin="30, 10, 30, 10" BorderThickness="5" BorderBrush="{x:Static local:MainWindow.StatusBorderColor}">
             <Grid>
                 <Rectangle Fill="{x:Static local:MainWindow.OpponentFieldUnknownCellColor}"/>
-                <TextBlock x:Name="GameStatus" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}">Добрый день, мой друг</TextBlock>
+                <TextBlock x:Name="GameStatus" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           FontSize="25" 
+                           Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}"
+                           Text="Добрый день, мой друг"/>
             </Grid>
         </Border>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Vertical"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="25"/>
+                    <Setter Property="Margin" Value="2"/>
+                </Style>
+                <Style TargetType="Border">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="BorderThickness" Value="5"></Setter>
+                </Style>
+            </StackPanel.Resources>
 
             <Grid x:Name="FieldBuilderCounter" Margin="0, 90, 0, 0">
+                
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
@@ -37,38 +60,40 @@
                         <Setter Property="Margin" Value="5"></Setter>
                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                         <Setter Property="FontSize" Value="20"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
                     </Style>
                     <Style TargetType="StackPanel">
                         <Setter Property="Orientation" Value="Horizontal"></Setter>
                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Setter Property="MaxHeight" Value="40"></Setter>
                     </Style>
                 </Grid.Resources>
 
-                <TextBlock  Grid.Row="0" Grid.Column="0" x:Name="SizeFourShipsLeft" TextAlignment="Right">1</TextBlock>
-                <StackPanel Grid.Row="0" Grid.Column="1" x:Name="SizeFourShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+                <TextBlock  Grid.Row="0" Grid.Column="0" x:Name="SizeFourShipsLeft">1</TextBlock>
+                <StackPanel Grid.Row="0" Grid.Column="1" x:Name="SizeFourShipImage"></StackPanel>
 
-                <TextBlock  Grid.Row="1" Grid.Column="0" x:Name="SizeThreeShipsLeft" TextAlignment="Right">2</TextBlock>
-                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="SizeThreeShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+                <TextBlock  Grid.Row="1" Grid.Column="0" x:Name="SizeThreeShipsLeft">2</TextBlock>
+                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="SizeThreeShipImage"></StackPanel>
 
-                <TextBlock  Grid.Row="2" Grid.Column="0" x:Name="SizeTwoShipsLeft" TextAlignment="Right">3</TextBlock>
-                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="SizeTwoShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+                <TextBlock  Grid.Row="2" Grid.Column="0" x:Name="SizeTwoShipsLeft">3</TextBlock>
+                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="SizeTwoShipImage"></StackPanel>
 
-                <TextBlock  Grid.Row="3" Grid.Column="0" x:Name="SizeOneShipsLeft" TextAlignment="Right">4</TextBlock>
-                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="SizeOneShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+                <TextBlock  Grid.Row="3" Grid.Column="0" x:Name="SizeOneShipsLeft">4</TextBlock>
+                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="SizeOneShipImage"></StackPanel>
 
             </Grid>
 
-            <StackPanel Orientation="Vertical" Margin="5, 5, 10, 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}" Margin="2">Ваше поле</TextBlock>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}" BorderThickness="5">
+            <StackPanel Margin="5, 5, 10, 5">
+                <TextBlock Foreground="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}">Ваше поле</TextBlock>
+                <Border BorderBrush="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}">
                     <Grid x:Name="SelfGrid"/>
                 </Border>
             </StackPanel>
 
-            <StackPanel x:Name="OpponentField" Orientation="Vertical" Margin="10, 5, 5, 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
-                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}" Margin="2">Поле оппонента</TextBlock>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Static local:MainWindow.OpponentFieldShipCellColor}" BorderThickness="5">
+            <StackPanel x:Name="OpponentField" Margin="10, 5, 5, 5" Visibility="Collapsed">
+                <TextBlock Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}">Поле оппонента</TextBlock>
+                <Border BorderBrush="{x:Static local:MainWindow.OpponentFieldShipCellColor}">
                     <Grid x:Name="OpponentGrid"/>
                 </Border>
             </StackPanel>
@@ -132,6 +157,3 @@
 
     </StackPanel>
 </Window>
-
-
-
