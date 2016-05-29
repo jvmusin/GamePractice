@@ -17,8 +17,8 @@ namespace BattleshipUserInterface
         private readonly IKernel kernel;
         private IGameController controller;
 
-        private readonly Rectangle[,] selfFieldGridLabels;
-        private readonly Rectangle[,] opponentFieldGridLabels;
+        private readonly Rectangle[,] selfFieldCells;
+        private readonly Rectangle[,] opponentFieldCells;
 
         private readonly Size fieldSize = new Size(10, 10);
 
@@ -27,8 +27,8 @@ namespace BattleshipUserInterface
             kernel = InitKernel();
             InitializeComponent();
 
-            selfFieldGridLabels = SetUpField(SelfGrid, false);
-            opponentFieldGridLabels = SetUpField(OpponentGrid, true);
+            selfFieldCells = SetUpField(SelfGrid, false);
+            opponentFieldCells = SetUpField(OpponentGrid, true);
         }
 
         private Rectangle[,] SetUpField(Grid field, bool shouldBeClickable)
@@ -74,15 +74,15 @@ namespace BattleshipUserInterface
 
         private Thread opponentThread;
 
-        private void AddTurnOnClick(UIElement button, int row, int column)
+        private void AddTurnOnClick(UIElement element, int row, int column)
         {
-            button.MouseUp += (sender, args) =>
+            element.MouseUp += (sender, args) =>
             {
                 if ((opponentThread != null && opponentThread.IsAlive) || controller.GameFinished)
                     return;
 
                 controller.Shoot(new CellPosition(row, column));
-                UpdateGrids();
+                UpdateFields();
                 if (controller.GameFinished)
                 {
                     MessageBox.Show("You win!");
@@ -96,7 +96,7 @@ namespace BattleshipUserInterface
                         var opponentTarget = controller.CurrentPlayer.NextTarget;
                         controller.Shoot(opponentTarget);
                         Thread.Sleep(100);
-                        button.Dispatcher.Invoke(UpdateGrids);
+                        element.Dispatcher.Invoke(UpdateFields);
                     }
                     if (controller.GameFinished)
                         MessageBox.Show("You lost =(");
@@ -105,22 +105,22 @@ namespace BattleshipUserInterface
             };
         }
 
-        private static void ColorGrid<T>(Rectangle[,] gridLabels, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
+        private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
         {
             foreach (var position in field.EnumerateCellPositions())
-                gridLabels[position.Row, position.Column].Fill = getColor(field[position]);
+                cells[position.Row, position.Column].Fill = getColor(field[position]);
         }
 
         private void CreateNewGameHandle(object sender, RoutedEventArgs e)
         {
             controller = kernel.Get<IGameController>();
-            UpdateGrids();
+            UpdateFields();
         }
 
-        private void UpdateGrids()
+        private void UpdateFields()
         {
-            ColorGrid(selfFieldGridLabels, controller.FirstPlayer.SelfField, SelfFieldColorer);
-            ColorGrid(opponentFieldGridLabels, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
+            ColorCells(selfFieldCells, controller.FirstPlayer.SelfField, SelfFieldColorer);
+            ColorCells(opponentFieldCells, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
         }
 
         private static readonly Func<IGameCell, Brush> SelfFieldColorer = cell =>

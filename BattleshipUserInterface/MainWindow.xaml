@@ -14,14 +14,14 @@
             
             <StackPanel Orientation="Vertical">
                 <Label HorizontalAlignment="Center">Self field</Label>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center"  BorderBrush="LightGreen" BorderThickness="4">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="LightGreen" BorderThickness="4">
                     <Grid x:Name="SelfGrid"/>
                 </Border>
             </StackPanel>
             
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                 <Label HorizontalAlignment="Center">Opponent field knowledge</Label>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center"  BorderBrush="PaleVioletRed" BorderThickness="4">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="PaleVioletRed" BorderThickness="4">
                     <Grid x:Name="OpponentGrid"/>
                 </Border>
             </StackPanel>
