@@ -5,18 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BattleshipUserInterface"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="700">
-    <StackPanel Orientation="Vertical">
-        <Button Click="CreateNewGameHandle" Content="Create new game" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 30, 0, 0"></Button>
+        Title="MainWindow" Height="500" Width="730" ResizeMode="NoResize">
+    <StackPanel Orientation="Vertical" Margin="20">
+
+        <Button Click="CreateNewGameHandle" HorizontalAlignment="Center" VerticalAlignment="Center">Create new game</Button>
+        
         <StackPanel Orientation="Horizontal" Margin="20" HorizontalAlignment="Center">
+            
             <StackPanel Orientation="Vertical">
-                <Label Content="Self field" HorizontalAlignment="Center"></Label>
-                <Grid x:Name="SelfGrid" Margin="10"/>
+                <Label HorizontalAlignment="Center">Self field</Label>
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center"  BorderBrush="LightGreen" BorderThickness="4">
+                    <Grid x:Name="SelfGrid"/>
+                </Border>
             </StackPanel>
+            
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                <Label Content="Opponent field knowledge" HorizontalAlignment="Center"></Label>
-                <Grid x:Name="OpponentGrid" Margin="10"/>
+                <Label HorizontalAlignment="Center">Opponent field knowledge</Label>
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center"  BorderBrush="PaleVioletRed" BorderThickness="4">
+                    <Grid x:Name="OpponentGrid"/>
+                </Border>
             </StackPanel>
+            
         </StackPanel>
+        
     </StackPanel>
 </Window>

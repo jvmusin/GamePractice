@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Battleship", "Battleship\Ba
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C0D07998-8096-44FD-8E14-00598A960515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphicUserInterface", "GraphicInterface\GraphicUserInterface.csproj", "{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleshipUserInterface", "BattleshipUserInterface\BattleshipUserInterface.csproj", "{ACB43F0B-648B-445A-BB36-5E21345D0F9A}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{C0D07998-8096-44FD-8E14-00598A960515}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0D07998-8096-44FD-8E14-00598A960515}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0D07998-8096-44FD-8E14-00598A960515}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5A4E297-4F94-4BA1-8EF6-49C67216C92B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACB43F0B-648B-445A-BB36-5E21345D0F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU

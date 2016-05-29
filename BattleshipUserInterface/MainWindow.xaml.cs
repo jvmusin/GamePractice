@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+using System.Windows.Shapes;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Ninject;
@@ -16,8 +17,8 @@ namespace BattleshipUserInterface
         private readonly IKernel kernel;
         private IGameController controller;
 
-        private readonly Button[,] selfFieldGridLabels;
-        private readonly Button[,] opponentFieldGridLabels;
+        private readonly Rectangle[,] selfFieldGridLabels;
+        private readonly Rectangle[,] opponentFieldGridLabels;
 
         private readonly Size fieldSize = new Size(10, 10);
 
@@ -30,70 +31,96 @@ namespace BattleshipUserInterface
             opponentFieldGridLabels = SetUpField(OpponentGrid, true);
         }
 
-        private Button[,] SetUpField(Grid grid, bool shouldBeClickable)
+        private Rectangle[,] SetUpField(Grid field, bool shouldBeClickable)
         {
-            var result = new Button[fieldSize.Height, fieldSize.Width];
+            var result = new Rectangle[fieldSize.Height, fieldSize.Width];
 
-            grid.HorizontalAlignment = HorizontalAlignment.Stretch;
-            grid.VerticalAlignment = VerticalAlignment.Stretch;
+            SetUpFieldSize(field);
+            
             for (var row = 0; row < fieldSize.Height; row++)
-            {
-                grid.RowDefinitions.Add(new RowDefinition { MinHeight = 10, Height = new GridLength(30) });
-                grid.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 10, Width = new GridLength(30) });
                 for (var column = 0; column < fieldSize.Width; column++)
                 {
-                    var button = result[row, column] = new Button
-                    {
-                        HorizontalContentAlignment = HorizontalAlignment.Center,
-                        VerticalContentAlignment = VerticalAlignment.Center,
-                        Content = "   ",
-                        Margin = new Thickness(1),
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        MinWidth = 50,
-                        MinHeight = 50
-                    };
-                    grid.Children.Add(button);
-                    Grid.SetRow(button, row);
-                    Grid.SetColumn(button, column);
+                    var cell = result[row, column] = DefaultGridCell;
+                    field.Children.Add(cell);
+                    Grid.SetRow(cell, row);
+                    Grid.SetColumn(cell, column);
 
                     if (shouldBeClickable)
-                        AddTurnOnClick(button, row, column);
+                        AddTurnOnClick(cell, row, column);
                 }
-            }
 
             return result;
         }
 
-        private void AddTurnOnClick(ButtonBase button, int row, int column)
+        private static Rectangle DefaultGridCell => new Rectangle
         {
-            button.Click += (sender, args) =>
+            Margin = new Thickness(1),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            MinWidth = 50,
+            MinHeight = 50
+        };
+
+        private static void SetUpFieldSize(Grid field)
+        {
+            field.HorizontalAlignment = HorizontalAlignment.Stretch;
+            field.VerticalAlignment = VerticalAlignment.Stretch;
+            for (var i = 0; i < 10; i++)
             {
+                field.RowDefinitions.Add(new RowDefinition { MinHeight = 10, Height = new GridLength(30) });
+                field.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 10, Width = new GridLength(30) });
+            }
+        }
+
+        private Thread opponentThread;
+
+        private void AddTurnOnClick(UIElement button, int row, int column)
+        {
+            button.MouseUp += (sender, args) =>
+            {
+                if ((opponentThread != null && opponentThread.IsAlive) || controller.GameFinished)
+                    return;
+
                 controller.Shoot(new CellPosition(row, column));
-                while (!controller.GameFinished && !controller.FirstPlayerTurns)
-                    controller.Shoot(controller.CurrentPlayer.NextTarget);
-                UpdatePlayerGrids(controller.FirstPlayer);
+                UpdateGrids();
                 if (controller.GameFinished)
-                    MessageBox.Show(controller.FirstPlayerTurns ? "You win!" : "You lost =(");
+                {
+                    MessageBox.Show("You win!");
+                    return;
+                }
+
+                opponentThread = new Thread(() =>
+                {
+                    while (!controller.GameFinished && !controller.FirstPlayerTurns)
+                    {
+                        var opponentTarget = controller.CurrentPlayer.NextTarget;
+                        controller.Shoot(opponentTarget);
+                        Thread.Sleep(100);
+                        button.Dispatcher.Invoke(UpdateGrids);
+                    }
+                    if (controller.GameFinished)
+                        MessageBox.Show("You lost =(");
+                });
+                opponentThread.Start();
             };
         }
 
-        private static void InitGrid<T>(Button[,] gridLabels, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
+        private static void ColorGrid<T>(Rectangle[,] gridLabels, IRectangularReadonlyField<T> field, Func<T, Brush> getColor)
         {
             foreach (var position in field.EnumerateCellPositions())
-                gridLabels[position.Row, position.Column].Background = getColor(field[position]);
+                gridLabels[position.Row, position.Column].Fill = getColor(field[position]);
         }
 
         private void CreateNewGameHandle(object sender, RoutedEventArgs e)
         {
             controller = kernel.Get<IGameController>();
-            UpdatePlayerGrids(controller.FirstPlayer);
+            UpdateGrids();
         }
 
-        private void UpdatePlayerGrids(IPlayer player)
+        private void UpdateGrids()
         {
-            InitGrid(selfFieldGridLabels, player.SelfField, SelfFieldColorer);
-            InitGrid(opponentFieldGridLabels, player.OpponentFieldKnowledge, OpponentFieldColorer);
+            ColorGrid(selfFieldGridLabels, controller.FirstPlayer.SelfField, SelfFieldColorer);
+            ColorGrid(opponentFieldGridLabels, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
         }
 
         private static readonly Func<IGameCell, Brush> SelfFieldColorer = cell =>
@@ -101,11 +128,6 @@ namespace BattleshipUserInterface
             var shipCell = cell as ShipCell;
             if (shipCell != null)
             {
-                //                return shipCell.Ship.Killed
-                //                    ? Brushes.Red
-                //                    : shipCell.Damaged
-                //                        ? Brushes.Yellow
-                //                        : Brushes.Green;
                 return shipCell.Damaged
                         ? Brushes.Yellow
                         : Brushes.Green;
@@ -127,13 +149,8 @@ namespace BattleshipUserInterface
 
             kernel.Bind<IGameFieldBuilder>().To<GameFieldBuilder>();
             kernel.Bind<IGameField>().ToMethod(context => context.Kernel.Get<IGameFieldBuilder>().GenerateRandomField());
-            kernel.Bind<IPlayerFactory>().To<PlayerFactory>();
-
-            kernel.Bind<IGameController>().To<GameController>()
-                .WithConstructorArgument("firstPlayer",
-                    context => context.Kernel.Get<IPlayerFactory>().CreateConsolePlayer(kernel.Get<IGameField>()))
-                .WithConstructorArgument("secondPlayer",
-                    context => context.Kernel.Get<IPlayerFactory>().CreateRandomPlayer(kernel.Get<IGameField>()));
+            kernel.Bind<IPlayer>().To<RandomPlayer>();
+            kernel.Bind<IGameController>().To<GameController>();
 
             return kernel;
         }

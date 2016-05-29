@@ -41,6 +41,9 @@ namespace Battleship.Implementations
         
         public ShotResult Shoot(CellPosition target)
         {
+            if (GameFinished)
+                return null;
+
             var result = OpponentPlayer.SelfField.Shoot(target);
             if (result == null)
                 return null;
