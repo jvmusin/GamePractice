@@ -89,24 +89,38 @@ namespace BattleshipUserInterface
                 UpdateFields();
                 if (controller.GameFinished)
                 {
-                    MessageBox.Show("You win!");
+                    SetGameStatus("Вы победили!");
+                    MessageBox.Show("Вы победили!");
                     return;
                 }
 
+                GameStatus.Text = "Ход оппонента";
                 opponentThread = new Thread(() =>
                 {
                     while (!controller.GameFinished && !controller.FirstPlayerTurns)
                     {
                         var opponentTarget = controller.CurrentPlayer.NextTarget;
                         controller.Shoot(opponentTarget);
-                        Thread.Sleep(100);
+                        Thread.Sleep(300);
                         element.Dispatcher.Invoke(UpdateFields);
                     }
                     if (controller.GameFinished)
-                        MessageBox.Show("You lost =(");
+                    {
+                        SetGameStatus("Вы проиграли =(");
+                        MessageBox.Show("Вы проиграли =(");
+                    }
+                    else
+                    {
+                        SetGameStatus("Ваш ход");
+                    }
                 });
                 opponentThread.Start();
             };
+        }
+
+        private void SetGameStatus(string newStatus)
+        {
+            GameStatus.Dispatcher.Invoke(() => GameStatus.Text = newStatus);
         }
 
         private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Color> getColor)

@@ -5,27 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BattleshipUserInterface"
         mc:Ignorable="d"
-        Title="MainWindow" Height="570" Width="850" Background="#EFFEE1">
+        Title="Морской бой" Height="570" Width="850" Background="#EFFEE1">
     <StackPanel Orientation="Vertical" Margin="10, 15, 10, 10">
 
         <Border Height="55" Width="450" Margin="30, 10, 30, 10" BorderThickness="5" BorderBrush="#87F228">
             <Grid>
                 <Rectangle Fill="#C4FE90"/>
-                <TextBlock Text="Ваш ход" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#3A7505"></TextBlock>
+                <TextBlock x:Name="GameStatus" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#3A7505">Ваш ход</TextBlock>
             </Grid>
         </Border>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
             <StackPanel Orientation="Vertical" Margin="5, 5, 10, 5">
-                <Label HorizontalAlignment="Center">Self field</Label>
+                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="#F12869" Margin="2">Моё поле</TextBlock>
                 <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#F12869" BorderThickness="5">
                     <Grid x:Name="SelfGrid"/>
                 </Border>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="10, 5, 5, 5">
-                <Label HorizontalAlignment="Center">Opponent field knowledge</Label>
+                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="#3A7505" Margin="2">Поле оппонента</TextBlock>
                 <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#3A7505" BorderThickness="5">
                     <Grid x:Name="OpponentGrid"/>
                 </Border>
@@ -36,7 +36,7 @@
         <Border Height="55" Width="150" Margin="0, 20, 20, 0" BorderThickness="5" BorderBrush="#F12869" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <Grid>
                 <Rectangle Fill="#FE90B3"/>
-                <TextBlock Text="Выход" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#750529"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#750529">Выход</TextBlock>
             </Grid>
         </Border>
 
