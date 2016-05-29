@@ -18,8 +18,8 @@ namespace BattleshipUserInterface
     public partial class MainWindow
     {
         private readonly IKernel container;
-        private IGameController controller;
 
+        private IGameController controller;
         private IGameFieldBuilder builder;
 
         private readonly Rectangle[,] selfFieldCells;
@@ -118,7 +118,6 @@ namespace BattleshipUserInterface
         }
 
         private Thread opponentThread;
-
         private void AddTurnOnClick(UIElement element, int row, int column)
         {
             element.MouseLeftButtonUp += (sender, args) =>
@@ -127,7 +126,7 @@ namespace BattleshipUserInterface
                     return;
 
                 controller.Shoot(new CellPosition(row, column));
-                UpdateFields();
+                UpdateGameFields();
                 if (controller.GameFinished)
                 {
                     ShowPlayerWonStatus();
@@ -142,7 +141,7 @@ namespace BattleshipUserInterface
                         var opponentTarget = controller.CurrentPlayer.NextTarget;
                         controller.Shoot(opponentTarget);
                         Thread.Sleep(300);
-                        element.Dispatcher.Invoke(UpdateFields);
+                        element.Dispatcher.Invoke(UpdateGameFields);
                     }
                     UpdateCurrentPlayerStatus();
                     if (controller.GameFinished)
@@ -218,7 +217,7 @@ namespace BattleshipUserInterface
             controller = new GameController(new RandomPlayer(me), container.Get<IPlayer>());
             HideGroup(BuilderElements);
             ShowGroup(GameFieldElements);
-            UpdateFields();
+            UpdateGameFields();
             UpdateCurrentPlayerStatus();
         }
 
@@ -272,7 +271,7 @@ namespace BattleshipUserInterface
                 element.Visibility = Visibility.Visible;
         }
 
-        private void UpdateFields()
+        private void UpdateGameFields()
         {
             ColorCells(selfFieldCells, controller.FirstPlayer.SelfField, SelfFieldColorer);
             ColorCells(opponentFieldCells, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
