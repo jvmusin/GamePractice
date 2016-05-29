@@ -106,7 +106,7 @@
             <Border x:Name="ClearFieldButton">
                 <Grid MouseLeftButtonUp="ClearFieldHandle">
                     <Rectangle/>
-                    <TextBlock>Отчистить</TextBlock>
+                    <TextBlock>Очистить</TextBlock>
                 </Grid>
             </Border>
             <Border x:Name="GenerateRandomFieldButton">
