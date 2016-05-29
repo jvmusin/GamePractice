@@ -3,42 +3,120 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:BattleshipUserInterface"
         mc:Ignorable="d"
-        Title="Морской бой" Height="570" Width="850" Background="#EFFEE1">
+        Title="Морской бой" Height="570" Width="850" Background="{x:Static local:MainWindow.BackgroundColor}">
+
     <StackPanel Orientation="Vertical" Margin="10, 15, 10, 10">
 
-        <Border Height="55" Width="450" Margin="30, 10, 30, 10" BorderThickness="5" BorderBrush="#87F228">
+        <Border Height="55" Width="450" Margin="30, 10, 30, 10" BorderThickness="5" BorderBrush="{x:Static local:MainWindow.StatusBorderColor}">
             <Grid>
-                <Rectangle Fill="#C4FE90"/>
-                <TextBlock x:Name="GameStatus" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#3A7505">Ваш ход</TextBlock>
+                <Rectangle Fill="{x:Static local:MainWindow.OpponentFieldUnknownCellColor}"/>
+                <TextBlock x:Name="GameStatus" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}">Добрый день, мой друг</TextBlock>
             </Grid>
         </Border>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
-            <StackPanel Orientation="Vertical" Margin="5, 5, 10, 5">
-                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="#F12869" Margin="2">Моё поле</TextBlock>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#F12869" BorderThickness="5">
+            <Grid x:Name="FieldBuilderCounter" Margin="0, 90, 0, 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"></ColumnDefinition>
+                    <ColumnDefinition Width="230"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{x:Static local:MainWindow.SelfFieldDamagedShilCellColor}"/>
+                        <Setter Property="Margin" Value="5"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="FontSize" Value="20"></Setter>
+                    </Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Orientation" Value="Horizontal"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                    </Style>
+                </Grid.Resources>
+
+                <TextBlock  Grid.Row="0" Grid.Column="0" x:Name="SizeFourShipsLeft" TextAlignment="Right">1</TextBlock>
+                <StackPanel Grid.Row="0" Grid.Column="1" x:Name="SizeFourShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+
+                <TextBlock  Grid.Row="1" Grid.Column="0" x:Name="SizeThreeShipsLeft" TextAlignment="Right">2</TextBlock>
+                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="SizeThreeShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+
+                <TextBlock  Grid.Row="2" Grid.Column="0" x:Name="SizeTwoShipsLeft" TextAlignment="Right">3</TextBlock>
+                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="SizeTwoShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+
+                <TextBlock  Grid.Row="3" Grid.Column="0" x:Name="SizeOneShipsLeft" TextAlignment="Right">4</TextBlock>
+                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="SizeOneShipImage" Orientation="Horizontal" MaxHeight="40"></StackPanel>
+
+            </Grid>
+
+            <StackPanel Orientation="Vertical" Margin="5, 5, 10, 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}" Margin="2">Ваше поле</TextBlock>
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}" BorderThickness="5">
                     <Grid x:Name="SelfGrid"/>
                 </Border>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="10, 5, 5, 5">
-                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="#3A7505" Margin="2">Поле оппонента</TextBlock>
-                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#3A7505" BorderThickness="5">
+            <StackPanel x:Name="OpponentField" Orientation="Vertical" Margin="10, 5, 5, 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
+                <TextBlock HorizontalAlignment="Center" FontSize="25" Foreground="{x:Static local:MainWindow.OpponentFieldShipCellColor}" Margin="2">Поле оппонента</TextBlock>
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Static local:MainWindow.OpponentFieldShipCellColor}" BorderThickness="5">
                     <Grid x:Name="OpponentGrid"/>
                 </Border>
             </StackPanel>
 
         </StackPanel>
 
-        <Border Height="55" Width="150" Margin="0, 20, 20, 0" BorderThickness="5" BorderBrush="#F12869" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <Grid>
-                <Rectangle Fill="#FE90B3"/>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="#750529">Выход</TextBlock>
-            </Grid>
-        </Border>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 20, 0, 0">
+            <StackPanel.Resources>
+                <Style TargetType="Rectangle">
+                    <Setter Property="Fill" Value="{x:Static local:MainWindow.ExitButtonBackgroundColor}"></Setter>
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                    <Setter Property="FontSize" Value="25"></Setter>
+                    <Setter Property="Foreground" Value="{x:Static local:MainWindow.SelfFieldDamagedShilCellColor}"></Setter>
+                </Style>
+                <Style TargetType="Border">
+                    <Setter Property="Height" Value="45"></Setter>
+                    <Setter Property="Width" Value="150"></Setter>
+                    <Setter Property="Margin" Value="5"></Setter>
+                    <Setter Property="BorderThickness" Value="5"></Setter>
+                    <Setter Property="BorderBrush" Value="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+                </Style>
+            </StackPanel.Resources>
+
+            <Border x:Name="CreateNewGameButton">
+                <Grid MouseLeftButtonUp="CreateNewGameHandle">
+                    <Rectangle/>
+                    <TextBlock>Создать</TextBlock>
+                </Grid>
+            </Border>
+            <Border x:Name="GenerateRandomFieldButton" Width="200">
+                <Grid MouseLeftButtonUp="GenerateRandomFieldHandle">
+                    <Rectangle/>
+                    <TextBlock>Случайное поле</TextBlock>
+                </Grid>
+            </Border>
+            <Border>
+                <Grid MouseLeftButtonUp="ExitGameHandle">
+                    <Rectangle/>
+                    <TextBlock>Выход</TextBlock>
+                </Grid>
+            </Border>
+
+        </StackPanel>
 
     </StackPanel>
 </Window>

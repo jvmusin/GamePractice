@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -16,8 +18,10 @@ namespace BattleshipUserInterface
 {
     public partial class MainWindow
     {
-        private readonly IKernel kernel;
+        private readonly IKernel container;
         private IGameController controller;
+
+        private IGameFieldBuilder builder;
 
         private readonly Rectangle[,] selfFieldCells;
         private readonly Rectangle[,] opponentFieldCells;
@@ -26,31 +30,73 @@ namespace BattleshipUserInterface
 
         public MainWindow()
         {
-            kernel = InitKernel();
             InitializeComponent();
+            container = InitKernel();
 
             selfFieldCells = SetUpField(SelfGrid, false);
             opponentFieldCells = SetUpField(OpponentGrid, true);
 
-            CreateNewGameHandle(null, null);
+            builder = container.Get<IGameFieldBuilder>();
+            InitShipImages();
+            UpdateShipsLeftCount();
+            
+            //            CreateNewGameHandle(null, null);
         }
 
-        private Rectangle[,] SetUpField(Grid field, bool shouldBeClickable)
+        private void InitShipImages()
+        {
+            var imagesToFill = new[]
+            {
+                SizeOneShipImage,
+                SizeTwoShipImage,
+                SizeThreeShipImage,
+                SizeFourShipImage
+            };
+
+            for (var size = 1; size <= imagesToFill.Length; size++)
+                for (var i = 0; i < size; i++)
+                {
+                    var cell = DefaultGridCell;
+                    cell.Fill = SelfFieldUndamagedShipCellColor;
+                    imagesToFill[size - 1].Children.Add(cell);
+                }
+        }
+
+        private void UpdateShipsLeftCount()
+        {
+            var labels = new[]
+            {
+                SizeOneShipsLeft,
+                SizeTwoShipsLeft,
+                SizeThreeShipsLeft,
+                SizeFourShipsLeft
+            };
+
+            for (var size = 1; size <= labels.Length; size++)
+                labels[size - 1].Text = builder.ShipsLeft[(ShipType)size].ToString();
+        }
+
+        private Rectangle[,] SetUpField(Grid field, bool opponentField)
         {
             var result = new Rectangle[fieldSize.Height, fieldSize.Width];
 
             SetUpFieldSize(field);
-            
+
             for (var row = 0; row < fieldSize.Height; row++)
                 for (var column = 0; column < fieldSize.Width; column++)
                 {
                     var cell = result[row, column] = DefaultGridCell;
+                    cell.Fill = opponentField
+                        ? OpponentFieldUnknownCellColor
+                        : SelfFieldUndamagedEmptyCellColor;
                     field.Children.Add(cell);
                     Grid.SetRow(cell, row);
                     Grid.SetColumn(cell, column);
 
-                    if (shouldBeClickable)
+                    if (opponentField)
                         AddTurnOnClick(cell, row, column);
+                    else
+                        AddEditShipOnClick(cell, row, column);
                 }
 
             return result;
@@ -67,8 +113,6 @@ namespace BattleshipUserInterface
 
         private static void SetUpFieldSize(Grid field)
         {
-            field.HorizontalAlignment = HorizontalAlignment.Stretch;
-            field.VerticalAlignment = VerticalAlignment.Stretch;
             for (var i = 0; i < 10; i++)
             {
                 field.RowDefinitions.Add(new RowDefinition { MinHeight = 10, Height = new GridLength(30) });
@@ -80,7 +124,7 @@ namespace BattleshipUserInterface
 
         private void AddTurnOnClick(UIElement element, int row, int column)
         {
-            element.MouseUp += (sender, args) =>
+            element.MouseLeftButtonUp += (sender, args) =>
             {
                 if ((opponentThread != null && opponentThread.IsAlive) || controller.GameFinished)
                     return;
@@ -89,12 +133,11 @@ namespace BattleshipUserInterface
                 UpdateFields();
                 if (controller.GameFinished)
                 {
-                    SetGameStatus("Вы победили!");
-                    MessageBox.Show("Вы победили!");
+                    ShowPlayerWonStatus();
                     return;
                 }
 
-                GameStatus.Text = "Ход оппонента";
+                UpdateCurrentPlayerStatus();
                 opponentThread = new Thread(() =>
                 {
                     while (!controller.GameFinished && !controller.FirstPlayerTurns)
@@ -104,18 +147,53 @@ namespace BattleshipUserInterface
                         Thread.Sleep(300);
                         element.Dispatcher.Invoke(UpdateFields);
                     }
+                    UpdateCurrentPlayerStatus();
                     if (controller.GameFinished)
-                    {
-                        SetGameStatus("Вы проиграли =(");
-                        MessageBox.Show("Вы проиграли =(");
-                    }
-                    else
-                    {
-                        SetGameStatus("Ваш ход");
-                    }
+                        ShowPlayerLostStatus();
                 });
                 opponentThread.Start();
             };
+        }
+
+        private void AddEditShipOnClick(Shape cell, int row, int column)
+        {
+            cell.MouseLeftButtonUp += (sender, args) =>
+            {
+                if (builder == null)
+                    return;
+                if (builder.TryAddShipCell(new CellPosition(row, column)))
+                    cell.Fill = SelfFieldUndamagedShipCellColor;
+                UpdateShipsLeftCount();
+            };
+
+            cell.MouseRightButtonUp += (sender, args) =>
+            {
+                if (builder == null)
+                    return;
+                if (builder.TryRemoveShipCell(new CellPosition(row, column)))
+                    cell.Fill = SelfFieldUndamagedEmptyCellColor;
+                UpdateShipsLeftCount();
+            };
+        }
+
+        private void ShowPlayerWonStatus()
+        {
+            var text = "Вы победили!";
+            SetGameStatus(text);
+            MessageBox.Show(text);
+        }
+
+        private void ShowPlayerLostStatus()
+        {
+            var text = "Вы проиграли =(";
+            SetGameStatus(text);
+            MessageBox.Show(text);
+        }
+
+        private void UpdateCurrentPlayerStatus()
+        {
+            var text = controller.FirstPlayerTurns ? "Ваш ход" : "Ход оппонента";
+            SetGameStatus(text);
         }
 
         private void SetGameStatus(string newStatus)
@@ -123,17 +201,63 @@ namespace BattleshipUserInterface
             GameStatus.Dispatcher.Invoke(() => GameStatus.Text = newStatus);
         }
 
-        private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Color> getColor)
+        private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Brush> getBrush)
         {
             foreach (var position in field.EnumerateCellPositions())
-                cells[position.Row, position.Column].Fill 
-                    = new SolidColorBrush(getColor(field[position]));
+                cells[position.Row, position.Column].Fill = getBrush(field[position]);
         }
 
         private void CreateNewGameHandle(object sender, RoutedEventArgs e)
         {
-            controller = kernel.Get<IGameController>();
+            var me = builder.Build();
+            if (me == null)
+            {
+                MessageBox.Show(this, "Поле заполнено некорректно!");
+                return;
+            }
+            builder = null;
+
+            //TODO Make with Ninject
+            controller = new GameController(new RandomPlayer(me), container.Get<IPlayer>());
+            HideBuilderElements();
+            ShowGameField();
             UpdateFields();
+        }
+
+        private void GenerateRandomFieldHandle(object sender, MouseButtonEventArgs e)
+        {
+            builder = new GameFieldBuilder();
+            builder.GenerateRandomField();
+            foreach (var row in Enumerable.Range(0, builder.FieldSize.Height))
+                foreach (var column in Enumerable.Range(0, builder.FieldSize.Width))
+                    selfFieldCells[row, column].Fill = builder[new CellPosition(row, column)]
+                        ? SelfFieldUndamagedShipCellColor
+                        : SelfFieldUndamagedEmptyCellColor;
+            UpdateShipsLeftCount();
+        }
+
+        private void HideBuilderElements()
+        {
+            CreateNewGameButton.Visibility = Visibility.Collapsed;
+            GenerateRandomFieldButton.Visibility = Visibility.Collapsed;
+            FieldBuilderCounter.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowBuilderElements()
+        {
+            CreateNewGameButton.Visibility = Visibility.Visible;
+            GenerateRandomFieldButton.Visibility = Visibility.Visible;
+            FieldBuilderCounter.Visibility = Visibility.Visible;
+        }
+
+        private void HideGameField()
+        {
+            OpponentField.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowGameField()
+        {
+            OpponentField.Visibility = Visibility.Visible;
         }
 
         private void UpdateFields()
@@ -142,32 +266,40 @@ namespace BattleshipUserInterface
             ColorCells(opponentFieldCells, controller.FirstPlayer.OpponentFieldKnowledge, OpponentFieldColorer);
         }
 
-        private static readonly Func<IGameCell, Color> SelfFieldColorer = cell =>
+        private static readonly Func<IGameCell, Brush> SelfFieldColorer = cell =>
         {
             var shipCell = cell as ShipCell;
             if (shipCell != null)
             {
                 return shipCell.Damaged
-                    ? FromHex("#750529")
-                    : FromHex("#F12869");
+                    ? SelfFieldDamagedShilCellColor
+                    : SelfFieldUndamagedShipCellColor;
             }
             return cell.Damaged
-                ? FromHex("#CEBDC9")
-                : FromHex("#FFDCE7");
+                ? SelfFieldDamagedEmptyCellColor
+                : SelfFieldUndamagedEmptyCellColor;
         };
 
-        private static readonly Func<bool?, Color> OpponentFieldColorer = cell =>
+        private static readonly Func<bool?, Brush> OpponentFieldColorer = cell =>
         {
+            // ReSharper disable once ConvertToLambdaExpression
             return cell == null
-                ? FromHex("#C4FE90")
+                ? OpponentFieldUnknownCellColor
                 : cell == true
-                    ? FromHex("#3A7505")
-                    : FromHex("#B7CBA8");
+                    ? OpponentFieldShipCellColor
+                    : OpponentFieldEmptyCellColor;
         };
 
-        private static Color FromHex(string hexColor)
+        private void ExitGameHandle(object sender, MouseButtonEventArgs e)
         {
-            return (Color) ColorConverter.ConvertFromString(hexColor);
+            var result = controller == null || controller.GameFinished
+                ? MessageBoxResult.OK
+                : MessageBox.Show(
+                    "Игра не доиграна. Вы действительно хотите выйти?",
+                    "Выход из игры",
+                    MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+                Application.Current.Shutdown();
         }
 
         private static IKernel InitKernel()
@@ -181,5 +313,30 @@ namespace BattleshipUserInterface
 
             return kernel;
         }
+
+        private static Color FromHex(string hexColor)
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            return (Color)ColorConverter.ConvertFromString(hexColor);
+        }
+
+        #region Brushes
+
+        public static readonly Brush SelfFieldUndamagedShipCellColor = new SolidColorBrush(FromHex("#F12869"));
+        public static readonly Brush SelfFieldDamagedShilCellColor = new SolidColorBrush(FromHex("#750529"));
+        public static readonly Brush SelfFieldUndamagedEmptyCellColor = new SolidColorBrush(FromHex("#FFDCE7"));
+        public static readonly Brush SelfFieldDamagedEmptyCellColor = new SolidColorBrush(FromHex("#CEBDC9"));
+
+        public static readonly Brush OpponentFieldUnknownCellColor = new SolidColorBrush(FromHex("#C4FE90"));
+        public static readonly Brush OpponentFieldShipCellColor = new SolidColorBrush(FromHex("#3A7505"));
+        public static readonly Brush OpponentFieldEmptyCellColor = new SolidColorBrush(FromHex("#B7CBA8"));
+
+        public static readonly Brush BackgroundColor = new SolidColorBrush(FromHex("#EFFEE1"));
+
+        public static readonly Brush StatusBorderColor = new SolidColorBrush(FromHex("#87F228"));
+
+        public static readonly Brush ExitButtonBackgroundColor = new SolidColorBrush(FromHex("#FE90B3"));
+
+        #endregion
     }
 }
