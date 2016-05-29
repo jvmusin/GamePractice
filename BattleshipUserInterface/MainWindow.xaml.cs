@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -40,7 +41,7 @@ namespace BattleshipUserInterface
             InitShipImages();
             UpdateShipsLeftCount();
             
-            //            CreateNewGameHandle(null, null);
+            //            CreateFieldHandle(null, null);
         }
 
         private void InitShipImages()
@@ -207,7 +208,7 @@ namespace BattleshipUserInterface
                 cells[position.Row, position.Column].Fill = getBrush(field[position]);
         }
 
-        private void CreateNewGameHandle(object sender, RoutedEventArgs e)
+        private void CreateFieldHandle(object sender, RoutedEventArgs e)
         {
             var me = builder.Build();
             if (me == null)
@@ -219,45 +220,59 @@ namespace BattleshipUserInterface
 
             //TODO Make with Ninject
             controller = new GameController(new RandomPlayer(me), container.Get<IPlayer>());
-            HideBuilderElements();
-            ShowGameField();
+            HideGroup(BuilderElements);
+            ShowGroup(GameFieldElements);
             UpdateFields();
+        }
+
+        private void ClearFieldHandle(object sender, MouseButtonEventArgs e)
+        {
+            builder = container.Get<IGameFieldBuilder>();
+            FillSelfFieldUsingBuilder();
+            UpdateShipsLeftCount();
         }
 
         private void GenerateRandomFieldHandle(object sender, MouseButtonEventArgs e)
         {
-            builder = new GameFieldBuilder();
+            builder = container.Get<IGameFieldBuilder>();
             builder.GenerateRandomField();
+            FillSelfFieldUsingBuilder();
+            UpdateShipsLeftCount();
+        }
+
+        private void FillSelfFieldUsingBuilder()
+        {
             foreach (var row in Enumerable.Range(0, builder.FieldSize.Height))
                 foreach (var column in Enumerable.Range(0, builder.FieldSize.Width))
                     selfFieldCells[row, column].Fill = builder[new CellPosition(row, column)]
                         ? SelfFieldUndamagedShipCellColor
                         : SelfFieldUndamagedEmptyCellColor;
-            UpdateShipsLeftCount();
         }
 
-        private void HideBuilderElements()
+        private IEnumerable<UIElement> BuilderElements => new UIElement[]
         {
-            CreateNewGameButton.Visibility = Visibility.Collapsed;
-            GenerateRandomFieldButton.Visibility = Visibility.Collapsed;
-            FieldBuilderCounter.Visibility = Visibility.Collapsed;
+            CreateFieldButton,
+            GenerateRandomFieldButton,
+            ClearFieldButton,
+            FieldBuilderCounter
+        };
+
+        private IEnumerable<UIElement> GameFieldElements => new UIElement[]
+        {
+            OpponentField,
+            CreateNewGameButton
+        };
+
+        private void HideGroup(IEnumerable<UIElement> elements)
+        {
+            foreach (var element in elements)
+                element.Visibility = Visibility.Collapsed;
         }
 
-        private void ShowBuilderElements()
+        private void ShowGroup(IEnumerable<UIElement> elements)
         {
-            CreateNewGameButton.Visibility = Visibility.Visible;
-            GenerateRandomFieldButton.Visibility = Visibility.Visible;
-            FieldBuilderCounter.Visibility = Visibility.Visible;
-        }
-
-        private void HideGameField()
-        {
-            OpponentField.Visibility = Visibility.Collapsed;
-        }
-
-        private void ShowGameField()
-        {
-            OpponentField.Visibility = Visibility.Visible;
+            foreach (var element in elements)
+                element.Visibility = Visibility.Visible;
         }
 
         private void UpdateFields()
@@ -289,6 +304,22 @@ namespace BattleshipUserInterface
                     ? OpponentFieldShipCellColor
                     : OpponentFieldEmptyCellColor;
         };
+        
+        private void CreateNewGameHandle(object sender, MouseButtonEventArgs e)
+        {
+            var result = controller == null || controller.GameFinished
+                ? MessageBoxResult.OK
+                : MessageBox.Show(
+                    "Игра не доиграна. Вы действительно хотите начать новую игру?",
+                    "Новая игра",
+                    MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                HideGroup(GameFieldElements);
+                ShowGroup(BuilderElements);
+                ClearFieldHandle(null, null);
+            }
+        }
 
         private void ExitGameHandle(object sender, MouseButtonEventArgs e)
         {
