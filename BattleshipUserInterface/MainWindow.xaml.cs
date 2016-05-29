@@ -6,13 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Ninject;
 using Brush = System.Windows.Media.Brush;
-using Brushes = System.Windows.Media.Brushes;
 using Size = System.Drawing.Size;
 
 namespace BattleshipUserInterface
@@ -40,8 +38,6 @@ namespace BattleshipUserInterface
             builder = container.Get<IGameFieldBuilder>();
             InitShipImages();
             UpdateShipsLeftCount();
-            
-            //            CreateFieldHandle(null, null);
         }
 
         private void InitShipImages()
@@ -223,6 +219,7 @@ namespace BattleshipUserInterface
             HideGroup(BuilderElements);
             ShowGroup(GameFieldElements);
             UpdateFields();
+            UpdateCurrentPlayerStatus();
         }
 
         private void ClearFieldHandle(object sender, MouseButtonEventArgs e)
@@ -263,13 +260,13 @@ namespace BattleshipUserInterface
             CreateNewGameButton
         };
 
-        private void HideGroup(IEnumerable<UIElement> elements)
+        private static void HideGroup(IEnumerable<UIElement> elements)
         {
             foreach (var element in elements)
                 element.Visibility = Visibility.Collapsed;
         }
 
-        private void ShowGroup(IEnumerable<UIElement> elements)
+        private static void ShowGroup(IEnumerable<UIElement> elements)
         {
             foreach (var element in elements)
                 element.Visibility = Visibility.Visible;
@@ -315,8 +312,10 @@ namespace BattleshipUserInterface
                     MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
+                controller = null;
                 HideGroup(GameFieldElements);
                 ShowGroup(BuilderElements);
+                SetGameStatus("Расставьте корабли");
                 ClearFieldHandle(null, null);
             }
         }
