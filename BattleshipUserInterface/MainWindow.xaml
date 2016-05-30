@@ -37,50 +37,50 @@
                 <Style TargetType="Border">
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="BorderThickness" Value="5"></Setter>
+                    <Setter Property="BorderThickness" Value="5"/>
                 </Style>
             </StackPanel.Resources>
 
             <Grid x:Name="FieldBuilderCounter" Margin="0, 90, 0, 0">
                 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30"></ColumnDefinition>
-                    <ColumnDefinition Width="230"></ColumnDefinition>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="230"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="Foreground" Value="{x:Static local:MainWindow.SelfFieldDamagedShilCellColor}"/>
-                        <Setter Property="Margin" Value="5"></Setter>
-                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                        <Setter Property="FontSize" Value="20"></Setter>
-                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="TextAlignment" Value="Right"/>
                     </Style>
                     <Style TargetType="StackPanel">
-                        <Setter Property="Orientation" Value="Horizontal"></Setter>
-                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                        <Setter Property="MaxHeight" Value="40"></Setter>
+                        <Setter Property="Orientation" Value="Horizontal"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="MaxHeight" Value="40"/>
                     </Style>
                 </Grid.Resources>
 
-                <TextBlock  Grid.Row="0" Grid.Column="0" x:Name="SizeFourShipsLeft">1</TextBlock>
-                <StackPanel Grid.Row="0" Grid.Column="1" x:Name="SizeFourShipImage"></StackPanel>
+                <TextBlock  Grid.Row="0" Grid.Column="0" x:Name="SizeFourShipsLeft"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" x:Name="SizeFourShipImage"/>
 
-                <TextBlock  Grid.Row="1" Grid.Column="0" x:Name="SizeThreeShipsLeft">2</TextBlock>
-                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="SizeThreeShipImage"></StackPanel>
+                <TextBlock  Grid.Row="1" Grid.Column="0" x:Name="SizeThreeShipsLeft"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="SizeThreeShipImage"/>
 
-                <TextBlock  Grid.Row="2" Grid.Column="0" x:Name="SizeTwoShipsLeft">3</TextBlock>
-                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="SizeTwoShipImage"></StackPanel>
+                <TextBlock  Grid.Row="2" Grid.Column="0" x:Name="SizeTwoShipsLeft"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="SizeTwoShipImage"/>
 
-                <TextBlock  Grid.Row="3" Grid.Column="0" x:Name="SizeOneShipsLeft">4</TextBlock>
-                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="SizeOneShipImage"></StackPanel>
+                <TextBlock  Grid.Row="3" Grid.Column="0" x:Name="SizeOneShipsLeft"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="SizeOneShipImage"/>
 
             </Grid>
 
@@ -103,51 +103,51 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 20, 0, 0">
             <StackPanel.Resources>
                 <Style TargetType="Rectangle">
-                    <Setter Property="Fill" Value="{x:Static local:MainWindow.ExitButtonBackgroundColor}"></Setter>
+                    <Setter Property="Fill" Value="{x:Static local:MainWindow.ExitButtonBackgroundColor}"/>
                 </Style>
                 <Style TargetType="TextBlock">
-                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                    <Setter Property="FontSize" Value="25"></Setter>
-                    <Setter Property="Foreground" Value="{x:Static local:MainWindow.SelfFieldDamagedShilCellColor}"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="25"/>
+                    <Setter Property="Foreground" Value="{x:Static local:MainWindow.SelfFieldDamagedShilCellColor}"/>
                 </Style>
                 <Style TargetType="Border">
-                    <Setter Property="Height" Value="45"></Setter>
-                    <Setter Property="Width" Value="150"></Setter>
-                    <Setter Property="Margin" Value="5"></Setter>
-                    <Setter Property="BorderThickness" Value="5"></Setter>
-                    <Setter Property="BorderBrush" Value="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}"></Setter>
-                    <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                    <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+                    <Setter Property="Height" Value="45"/>
+                    <Setter Property="Width" Value="150"/>
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="BorderThickness" Value="5"/>
+                    <Setter Property="BorderBrush" Value="{x:Static local:MainWindow.SelfFieldUndamagedShipCellColor}"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
                 </Style>
             </StackPanel.Resources>
 
-            <Border x:Name="CreateFieldButton">
-                <Grid MouseLeftButtonUp="CreateFieldHandle">
+            <Border x:Name="StartGameButton">
+                <Grid MouseLeftButtonUp="StartGameHandle">
                     <Rectangle/>
-                    <TextBlock>Создать</TextBlock>
+                    <TextBlock>Начать</TextBlock>
                 </Grid>
             </Border>
-            <Border x:Name="ClearFieldButton">
-                <Grid MouseLeftButtonUp="ClearFieldHandle">
+            <Border x:Name="ClearFieldButton" MouseLeftButtonUp="ClearFieldHandle">
+                <Grid>
                     <Rectangle/>
                     <TextBlock>Очистить</TextBlock>
                 </Grid>
             </Border>
-            <Border x:Name="GenerateRandomFieldButton">
-                <Grid MouseLeftButtonUp="GenerateRandomFieldHandle">
+            <Border x:Name="GenerateRandomFieldButton" MouseLeftButtonUp="GenerateRandomFieldHandle">
+                <Grid>
                     <Rectangle/>
                     <TextBlock>Случайно</TextBlock>
                 </Grid>
             </Border>
-            <Border x:Name="CreateNewGameButton" Visibility="Collapsed">
-                <Grid MouseLeftButtonUp="CreateNewGameHandle">
+            <Border x:Name="CreateNewGameButton" Visibility="Collapsed" MouseLeftButtonUp="CreateNewGameHandle">
+                <Grid>
                     <Rectangle/>
                     <TextBlock>Новая игра</TextBlock>
                 </Grid>
             </Border>
-            <Border>
-                <Grid MouseLeftButtonUp="ExitGameHandle">
+            <Border MouseLeftButtonUp="ExitGameHandle">
+                <Grid>
                     <Rectangle/>
                     <TextBlock>Выход</TextBlock>
                 </Grid>

@@ -203,7 +203,7 @@ namespace BattleshipUserInterface
                 cells[position.Row, position.Column].Fill = getBrush(field[position]);
         }
 
-        private void CreateFieldHandle(object sender, RoutedEventArgs e)
+        private void StartGameHandle(object sender, RoutedEventArgs e)
         {
             var me = builder.Build();
             if (me == null)
@@ -247,7 +247,7 @@ namespace BattleshipUserInterface
 
         private IEnumerable<UIElement> BuilderElements => new UIElement[]
         {
-            CreateFieldButton,
+            StartGameButton,
             GenerateRandomFieldButton,
             ClearFieldButton,
             FieldBuilderCounter
