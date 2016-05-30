@@ -33,7 +33,7 @@ namespace Tests
             fieldSize = new Size(12, 2);
             builder = new GameFieldBuilder(new GameRules(fieldSize, new Dictionary<ShipType, int>()));
 
-            builder.FieldSize.Should().Be(fieldSize);
+            builder.Size.Should().Be(fieldSize);
         }
 
         [Test]

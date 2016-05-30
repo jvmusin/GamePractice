@@ -238,8 +238,8 @@ namespace BattleshipUserInterface
 
         private void FillSelfFieldUsingBuilder()
         {
-            foreach (var row in Enumerable.Range(0, builder.FieldSize.Height))
-                foreach (var column in Enumerable.Range(0, builder.FieldSize.Width))
+            foreach (var row in Enumerable.Range(0, builder.Size.Height))
+                foreach (var column in Enumerable.Range(0, builder.Size.Width))
                     selfFieldCells[row, column].Fill = builder[new CellPosition(row, column)]
                         ? SelfFieldUndamagedShipCellColor
                         : SelfFieldUndamagedEmptyCellColor;

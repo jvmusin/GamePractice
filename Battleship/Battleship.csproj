@@ -52,6 +52,7 @@
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
+    <Compile Include="Implementations\RandomFieldGenerator.cs" />
     <Compile Include="Implementations\RandomPlayer.cs" />
     <Compile Include="Interfaces\IGameFieldBuilder.cs" />
     <Compile Include="Implementations\ShipCell.cs" />

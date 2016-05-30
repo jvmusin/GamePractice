@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Battleship.Implementations
 {
     public class CellPosition
     {
+        private static readonly Random rnd = new Random();
+        public static readonly CellPosition DeltaRight = new CellPosition(0, 1);
+        public static readonly CellPosition DeltaDown = new CellPosition(1, 0);
+
         public int Row { get; }
         public int Column { get; }
 
@@ -28,18 +33,16 @@ namespace Battleship.Implementations
         public IEnumerable<CellPosition> ByAngleNeighbours => GetNeighbours(-1, 1);
         public IEnumerable<CellPosition> ByEdgeNeighbours => AllNeighbours.Except(ByAngleNeighbours);
 
-        public CellPosition AddDelta(CellPosition delta) => new CellPosition(Row + delta.Row, Column + delta.Column);
-
-        public static CellPosition Random(Random rnd, Size size)
+        public static CellPosition Random(Size size)
         {
             var row = rnd.Next(size.Height);
             var column = rnd.Next(size.Width);
-            return  new CellPosition(row, column);
+            return new CellPosition(row, column);
         }
 
-        public static CellPosition Random(Size size)
+        public static CellPosition operator+(CellPosition current, CellPosition other)
         {
-            return Random(new Random(), size);
+            return new CellPosition(current.Row + other.Row, current.Column + other.Column);
         }
 
         protected bool Equals(CellPosition other)

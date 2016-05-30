@@ -168,7 +168,7 @@ namespace Tests
             var cell = new CellPosition(12, 13);
             var delta = new CellPosition(3, 1);
 
-            var result = cell.AddDelta(delta);
+            var result = cell + delta;
 
             result.Row.Should().Be(12 + 3);
             result.Column.Should().Be(13 + 1);
@@ -180,7 +180,7 @@ namespace Tests
             var cell = new CellPosition(12, 13);
             var delta = new CellPosition(0, 1);
 
-            var result = cell.AddDelta(delta);
+            var result = cell + delta;
 
             result.Row.Should().Be(12);
             result.Column.Should().Be(13 + 1);
@@ -192,7 +192,7 @@ namespace Tests
             var cell = new CellPosition(12, 13);
             var delta = new CellPosition(0, 0);
 
-            var result = cell.AddDelta(delta);
+            var result = cell + delta;
 
             result.Row.Should().Be(12);
             result.Column.Should().Be(13);
@@ -204,7 +204,7 @@ namespace Tests
             var cell = new CellPosition(-12, 13);
             var delta = new CellPosition(10, 44);
 
-            var result = cell.AddDelta(delta);
+            var result = cell + delta;
 
             result.Row.Should().Be(-12 + 10);
             result.Column.Should().Be(13 + 44);
@@ -216,7 +216,7 @@ namespace Tests
             var cell = new CellPosition(-12, 13);
             var delta = new CellPosition(-10, -44);
 
-            var result = cell.AddDelta(delta);
+            var result = cell + delta;
 
             result.Row.Should().Be(-12 - 10);
             result.Column.Should().Be(13 - 44);

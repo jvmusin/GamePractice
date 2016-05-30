@@ -9,10 +9,8 @@ namespace Battleship.Implementations
 {
     public class GameFieldBuilder : IGameFieldBuilder
     {
-        private static readonly Random Random = new Random();
-
         public GameRules Rules { get; }
-        public Size FieldSize => Rules.FieldSize;
+        public Size Size => Rules.FieldSize;
 
         private readonly bool[,] field;
         private readonly Dictionary<ShipType, int> shipsLeft;
@@ -22,7 +20,7 @@ namespace Battleship.Implementations
         public GameFieldBuilder(GameRules rules)
         {
             Rules = rules;
-            field = new bool[FieldSize.Height, FieldSize.Width];
+            field = new bool[Size.Height, Size.Width];
             shipsLeft = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
         }
 
@@ -64,21 +62,8 @@ namespace Battleship.Implementations
             this[target] = false;
             var connectedShips = GetConnectedShips(target).ToList();
 
-            if (!connectedShips.Any())
-            {
-                shipsLeft[(ShipType) 1]++;
-                return true;
-            }
-
             foreach (var ship in connectedShips)
                 shipsLeft[ship]--;
-//            if (shipsLeft.Keys.Any(x => x < 0))
-//            {
-//                foreach (var ship in connectedShips)
-//                    shipsLeft[ship]++;
-//                this[target] = true;
-//                return false;
-//            }
 
             var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
             shipsLeft[oldShip]++;
@@ -124,70 +109,59 @@ namespace Battleship.Implementations
             if (ShipsLeft.Values.Any(x => x != 0))
                 return null;
 
-            var newField = new IGameCell[FieldSize.Height, FieldSize.Width];
-            foreach (var row in Enumerable.Range(0, FieldSize.Height))
-                foreach (var column in Enumerable.Range(0, FieldSize.Width))
-                {
-                    if (newField[row, column] != null)
-                        continue;
+            var newField = new IGameCell[Size.Height, Size.Width];
+            foreach (var position in this.EnumerateCellPositions())
+            {
+                var row = position.Row;
+                var column = position.Column;
 
-                    var curCell = new CellPosition(row, column);
-                    if (!this[curCell])
-                    {
-                        newField[row, column] = new EmptyCell(curCell);
-                        continue;
-                    }
-                    
-                    var curShip = new Ship(EnumerateShipCells(curCell));
-                    foreach (var piece in curShip.Pieces)
-                    {
-                        var pos = piece.Position;
-                        newField[pos.Row, pos.Column] = piece;
-                    }
+                if (newField[row, column] != null)
+                    continue;
+                
+                if (!this[position])
+                {
+                    newField[row, column] = new EmptyCell(position);
+                    continue;
                 }
+
+                var curShip = new Ship(EnumerateShipCells(position));
+                foreach (var piece in curShip.Pieces)
+                {
+                    var pos = piece.Position;
+                    newField[pos.Row, pos.Column] = piece;
+                }
+            }
 
             return new GameField(Rules,
                 position => newField[position.Row, position.Column]);
         }
 
+        public void Clear()
+        {
+            foreach (var position in this.EnumerateCellPositions())
+                TryRemoveShipCell(position);
+        }
+
         private IEnumerable<CellPosition> EnumerateShipCells(CellPosition start)
         {
-            var deltaRight = new CellPosition(0, 1);
-            var deltaDown = new CellPosition(1, 0);
-
-            var nextToRight = start.AddDelta(deltaRight);
+            var nextToRight = start + CellPosition.DeltaRight;
             var needToGoRight = IsOnField(nextToRight) && this[nextToRight];
-
-            var current = start;
-            while (IsOnField(current) && this[current])
+            
+            while (IsOnField(start) && this[start])
             {
-                yield return current;
-                current = current.AddDelta(needToGoRight ? deltaRight : deltaDown);
+                yield return start;
+                start += needToGoRight ? CellPosition.DeltaRight  : CellPosition.DeltaDown;
             }
         }
 
-        private bool IsOnField(CellPosition position)
+        public bool IsOnField(CellPosition position)
         {
             return
-                position.Row.IsInRange(0, FieldSize.Height) &&
-                position.Column.IsInRange(0, FieldSize.Width);
+                position.Row.IsInRange(0, Size.Height) &&
+                position.Column.IsInRange(0, Size.Width);
         }
 
-        public IGameField GenerateRandomField()
-        {
-            while (true)
-            {
-                var cell = CellPosition.Random(Random, FieldSize);
-                if (ShipsLeft.Values.Any(x => x < 0))
-                    TryRemoveShipCell(cell);
-                else
-                    TryAddShipCell(cell);
-
-                var newField = Build();
-                if (newField != null)
-                    return newField;
-            }
-        }
+        public IGameField GenerateRandomField() => new RandomFieldGenerator(this).Generate();
 
         public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }

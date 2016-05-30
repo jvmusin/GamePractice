@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using Battleship.Implementations;
 
 namespace Battleship.Interfaces
 {
-    public interface IGameFieldBuilder
+    public interface IGameFieldBuilder : IRectangularReadonlyField<bool>
     {
         GameRules Rules { get; }
-        Size FieldSize { get; }
         IReadOnlyDictionary<ShipType, int> ShipsLeft { get; }
 
         bool TryAddShipCell(CellPosition target);
         bool TryRemoveShipCell(CellPosition target);
 
         IGameField Build();
+        void Clear();
+        
         IGameField GenerateRandomField();
-
-        bool this[CellPosition position] { get; }
     }
 }
