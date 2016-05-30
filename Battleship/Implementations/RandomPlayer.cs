@@ -16,7 +16,7 @@ namespace Battleship.Implementations
         {
             get
             {
-                var targets = OpponentFieldKnowledge.EnumerateCellPositions().Where(pos => !OpponentFieldKnowledge[pos].HasValue).ToList();
+                var targets = OpponentFieldKnowledge.EnumeratePositions().Where(pos => !OpponentFieldKnowledge[pos].HasValue).ToList();
                 return targets[rnd.Next(targets.Count)];
             }
         }

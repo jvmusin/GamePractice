@@ -126,7 +126,7 @@ namespace Tests
         [Test]
         public void ReturnCorrectValuesByIndex()
         {
-            foreach (var position in field.EnumerateCellPositions())
+            foreach (var position in field.EnumeratePositions())
             {
                 var cell = field[position];
                 var symbolInField = SampleField[position.Row][position.Column];

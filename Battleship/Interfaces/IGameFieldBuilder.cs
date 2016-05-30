@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Battleship.Implementations;
 
 namespace Battleship.Interfaces
@@ -8,12 +9,17 @@ namespace Battleship.Interfaces
         GameRules Rules { get; }
         IReadOnlyDictionary<ShipType, int> ShipsLeft { get; }
 
-        bool TryAddShipCell(CellPosition target);
-        bool TryRemoveShipCell(CellPosition target);
+        bool TryAddShipCell(CellPosition position);
+        bool TryRemoveShipCell(CellPosition position);
 
+        bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical);
+
+        bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical,
+            Predicate<CellPosition> canUseCell);
+        bool TryAddFullShip(ShipType ship, CellPosition start, bool vertical);
+        bool TryRemoveFullShip(ShipType ship, CellPosition start, bool vertical);
+        
         IGameField Build();
         void Clear();
-        
-        IGameField GenerateRandomField();
     }
 }

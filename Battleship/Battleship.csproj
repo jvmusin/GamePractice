@@ -52,6 +52,8 @@
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
+    <Compile Include="Implementations\SmartPlayer.cs" />
+    <Compile Include="Interfaces\IRandomFieldGenerator.cs" />
     <Compile Include="Implementations\RandomFieldGenerator.cs" />
     <Compile Include="Implementations\RandomPlayer.cs" />
     <Compile Include="Interfaces\IGameFieldBuilder.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Implementations\Player.cs" />
+    <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Implementations\CellPosition.cs" />

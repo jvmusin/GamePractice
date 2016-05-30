@@ -28,39 +28,37 @@ namespace Battleship.Implementations
         {
         }
 
-        public bool TryAddShipCell(CellPosition target)
+        public bool TryAddShipCell(CellPosition position)
         {
-            if (!IsOnField(target) || this[target])
+            if (!IsOnField(position) || this[position])
                 return false;
             
-            if (HasConnectedByAngleShips(target))
+            if (HasConnectedByAngleShips(position))
                 return false;
 
-            var connectedShips = GetConnectedShips(target).ToList();
+            var connectedShips = GetConnectedShips(position).ToList();
             var newShipLength = connectedShips.Sum(type => type.GetLength()) + 1;
 
             if (!Enum.IsDefined(typeof (ShipType), newShipLength))
                 return false;
 
             var newShip = (ShipType) newShipLength;
-//            if (shipsLeft[newShip] == 0)
-//                return false;
 
             foreach (var destroyedShip in connectedShips)
                 shipsLeft[destroyedShip]++;
             shipsLeft[newShip]--;
 
-            this[target] = true;
+            this[position] = true;
             return true;
         }
 
-        public bool TryRemoveShipCell(CellPosition target)
+        public bool TryRemoveShipCell(CellPosition position)
         {
-            if (!IsOnField(target) || !this[target])
+            if (!IsOnField(position) || !this[position])
                 return false;
 
-            this[target] = false;
-            var connectedShips = GetConnectedShips(target).ToList();
+            this[position] = false;
+            var connectedShips = GetConnectedShips(position).ToList();
 
             foreach (var ship in connectedShips)
                 shipsLeft[ship]--;
@@ -68,6 +66,45 @@ namespace Battleship.Implementations
             var oldShip = (ShipType) connectedShips.Sum(x => x.GetLength()) + 1;
             shipsLeft[oldShip]++;
             return true;
+        }
+
+        public bool TryAddFullShip(ShipType ship, CellPosition start, bool vertical)
+        {
+            return TryEditFullShip(ship, start, vertical, true);
+        }
+
+        public bool TryRemoveFullShip(ShipType ship, CellPosition start, bool vertical)
+        {
+            return TryEditFullShip(ship, start, vertical, false);
+        }
+
+        private bool TryEditFullShip(ShipType ship, CellPosition start, bool vertical, bool add)
+        {
+            var changeState = add ? (Func<CellPosition, bool>) TryAddShipCell : TryRemoveShipCell;
+            var returnState = add ? (Func<CellPosition, bool>) TryRemoveShipCell : TryAddShipCell;
+            var cells = EnumerateUnreadyShipCells(ship, start, vertical).ToList();
+            for (var i = 0; i < cells.Count; i++)
+                if (!changeState(cells[i]))
+                {
+                    while (--i >= 0)
+                        returnState(cells[i]);
+                    return false;
+                }
+            return true;
+        }
+
+        public bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical)
+        {
+            return CanBeAddedSafely(ship, start, vertical, x => true);
+        }
+
+        public bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical,
+            Predicate<CellPosition> canUseCell)
+        {
+            return EnumerateUnreadyShipCells(ship, start, vertical)
+                .All(position =>
+                    IsOnField(position) && !this[position] && canUseCell(position) &&
+                    !position.AllNeighbours.Any(x => IsOnField(x) && this[x]));
         }
 
         private bool HasConnectedByAngleShips(CellPosition position)
@@ -110,7 +147,7 @@ namespace Battleship.Implementations
                 return null;
 
             var newField = new IGameCell[Size.Height, Size.Width];
-            foreach (var position in this.EnumerateCellPositions())
+            foreach (var position in EnumeratePositions())
             {
                 var row = position.Row;
                 var column = position.Column;
@@ -124,7 +161,7 @@ namespace Battleship.Implementations
                     continue;
                 }
 
-                var curShip = new Ship(EnumerateShipCells(position));
+                var curShip = new Ship(EnumerateReadyShipCells(position));
                 foreach (var piece in curShip.Pieces)
                 {
                     var pos = piece.Position;
@@ -138,11 +175,11 @@ namespace Battleship.Implementations
 
         public void Clear()
         {
-            foreach (var position in this.EnumerateCellPositions())
+            foreach (var position in EnumeratePositions())
                 TryRemoveShipCell(position);
         }
 
-        private IEnumerable<CellPosition> EnumerateShipCells(CellPosition start)
+        private IEnumerable<CellPosition> EnumerateReadyShipCells(CellPosition start)
         {
             var nextToRight = start + CellPosition.DeltaRight;
             var needToGoRight = IsOnField(nextToRight) && this[nextToRight];
@@ -154,6 +191,13 @@ namespace Battleship.Implementations
             }
         }
 
+        private static IEnumerable<CellPosition> EnumerateUnreadyShipCells(ShipType ship, CellPosition start, bool vertical)
+        {
+            var delta = vertical ? CellPosition.DeltaDown : CellPosition.DeltaRight;
+            for (var i = 0; i < ship.GetLength(); i++, start += delta)
+                yield return start;
+        }
+
         public bool IsOnField(CellPosition position)
         {
             return
@@ -161,7 +205,7 @@ namespace Battleship.Implementations
                 position.Column.IsInRange(0, Size.Width);
         }
 
-        public IGameField GenerateRandomField() => new RandomFieldGenerator(this).Generate();
+        public IEnumerable<CellPosition> EnumeratePositions() => field.EnumeratePositions();
 
         public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }

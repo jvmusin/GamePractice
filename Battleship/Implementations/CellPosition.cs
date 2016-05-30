@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Battleship.Implementations
 {
     public class CellPosition
     {
         private static readonly Random rnd = new Random();
+
         public static readonly CellPosition DeltaRight = new CellPosition(0, 1);
         public static readonly CellPosition DeltaDown = new CellPosition(1, 0);
+
+        public CellPosition Reversed => new CellPosition(-Row, -Column);
 
         public int Row { get; }
         public int Column { get; }
@@ -40,9 +42,14 @@ namespace Battleship.Implementations
             return new CellPosition(row, column);
         }
 
-        public static CellPosition operator+(CellPosition current, CellPosition other)
+        public static CellPosition operator +(CellPosition current, CellPosition other)
         {
             return new CellPosition(current.Row + other.Row, current.Column + other.Column);
+        }
+
+        public static CellPosition operator *(CellPosition cell, int delta)
+        {
+            return new CellPosition(cell.Row * delta, cell.Column * delta);
         }
 
         protected bool Equals(CellPosition other)

@@ -26,7 +26,7 @@ namespace Battleship.Implementations
 
         private void FillField(Func<CellPosition, IGameCell> getCell)
         {
-            foreach (var position in this.EnumerateCellPositions())
+            foreach (var position in this.EnumeratePositions())
                 this[position] = getCell(position);
         }
 
@@ -75,6 +75,8 @@ namespace Battleship.Implementations
                 cell.Column.IsInRange(0, Size.Width);
         }
 
+        public IEnumerable<CellPosition> EnumeratePositions() => field.EnumeratePositions();
+
         public IGameCell this[CellPosition position]
         {
             get { return field[position.Row, position.Column]; }
@@ -86,7 +88,7 @@ namespace Battleship.Implementations
         public override string ToString()
         {
             var table = Enumerable.Range(0, Size.Height).Select(row => new char[Size.Width]).ToArray();
-            foreach (var position in this.EnumerateCellPositions())
+            foreach (var position in this.EnumeratePositions())
             {
                 var cell = this[position];
                 char symbol;
@@ -101,7 +103,7 @@ namespace Battleship.Implementations
         protected bool Equals(IGameField other)
         {
             return Size == other.Size &&
-                   other.EnumerateCellPositions()
+                   other.EnumeratePositions()
                        .All(position => this[position].Damaged == other[position].Damaged &&
                                         this[position].GetType() == other[position].GetType());
         }

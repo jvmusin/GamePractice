@@ -199,7 +199,7 @@ namespace BattleshipUserInterface
 
         private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Brush> getBrush)
         {
-            foreach (var position in field.EnumerateCellPositions())
+            foreach (var position in field.EnumeratePositions())
                 cells[position.Row, position.Column].Fill = getBrush(field[position]);
         }
 
@@ -231,7 +231,7 @@ namespace BattleshipUserInterface
         private void GenerateRandomFieldHandle(object sender, MouseButtonEventArgs e)
         {
             builder = container.Get<IGameFieldBuilder>();
-            builder.GenerateRandomField();
+            new RandomFieldGenerator(builder).Generate();
             FillSelfFieldUsingBuilder();
             UpdateShipsLeftCount();
         }
@@ -259,16 +259,16 @@ namespace BattleshipUserInterface
             CreateNewGameButton
         };
 
-        private static void HideGroup(IEnumerable<UIElement> elements)
-        {
-            foreach (var element in elements)
-                element.Visibility = Visibility.Collapsed;
-        }
-
         private static void ShowGroup(IEnumerable<UIElement> elements)
         {
             foreach (var element in elements)
                 element.Visibility = Visibility.Visible;
+        }
+
+        private static void HideGroup(IEnumerable<UIElement> elements)
+        {
+            foreach (var element in elements)
+                element.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateGameFields()
@@ -336,8 +336,9 @@ namespace BattleshipUserInterface
             var kernel = new StandardKernel();
 
             kernel.Bind<IGameFieldBuilder>().To<GameFieldBuilder>();
-            kernel.Bind<IGameField>().ToMethod(context => context.Kernel.Get<IGameFieldBuilder>().GenerateRandomField());
-            kernel.Bind<IPlayer>().To<RandomPlayer>();
+            kernel.Bind<IRandomFieldGenerator>().To<RandomFieldGenerator>();
+            kernel.Bind<IGameField>().ToMethod(context => context.Kernel.Get<IRandomFieldGenerator>().Generate());
+            kernel.Bind<IPlayer>().To<SmartPlayer>();
             kernel.Bind<IGameController>().To<GameController>();
 
             return kernel;
