@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Battleship.Implementations;
 using Battleship.Interfaces;
+using Battleship.Utilities;
 using Ninject;
 using Brush = System.Windows.Media.Brush;
 using Size = System.Drawing.Size;

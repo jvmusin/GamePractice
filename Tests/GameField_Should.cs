@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Battleship.Implementations;
 using Battleship.Interfaces;
+using Battleship.Utilities;
 using FluentAssertions;
 using NUnit.Framework;
 

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Battleship.Implementations
 {
-    public class CellPosition
+    public class CellPosition : IComparable<CellPosition>
     {
         private static readonly Random rnd = new Random();
 
@@ -32,8 +32,8 @@ namespace Battleship.Implementations
         }
 
         public IEnumerable<CellPosition> AllNeighbours => GetNeighbours(-1, 0, 1).Where(x => !x.Equals(this));
-        public IEnumerable<CellPosition> ByAngleNeighbours => GetNeighbours(-1, 1);
-        public IEnumerable<CellPosition> ByEdgeNeighbours => AllNeighbours.Except(ByAngleNeighbours);
+        public IEnumerable<CellPosition> ByVertexNeighbours => GetNeighbours(-1, 1);
+        public IEnumerable<CellPosition> ByEdgeNeighbours => AllNeighbours.Except(ByVertexNeighbours);
 
         public static CellPosition Random(Size size)
         {
@@ -52,11 +52,16 @@ namespace Battleship.Implementations
             return new CellPosition(cell.Row * delta, cell.Column * delta);
         }
 
+        public int CompareTo(CellPosition other)
+        {
+            var cmp = Row.CompareTo(other.Row);
+            if (cmp == 0) cmp = Column.CompareTo(other.Column);
+            return cmp;
+        }
+
         protected bool Equals(CellPosition other)
         {
-            return
-                Equals(Row, other.Row) &&
-                Equals(Column, other.Column);
+            return CompareTo(other) == 0;
         }
 
         public override bool Equals(object obj)

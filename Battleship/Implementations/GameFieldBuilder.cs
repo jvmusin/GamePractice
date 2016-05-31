@@ -30,10 +30,10 @@ namespace Battleship.Implementations
 
         public bool TryAddShipCell(CellPosition position)
         {
-            if (!IsOnField(position) || this[position])
+            if (!this.IsOnField(position) || this[position])
                 return false;
             
-            if (HasConnectedByAngleShips(position))
+            if (HasConnectedByVertexShips(position))
                 return false;
 
             var connectedShips = GetConnectedShips(position).ToList();
@@ -54,7 +54,7 @@ namespace Battleship.Implementations
 
         public bool TryRemoveShipCell(CellPosition position)
         {
-            if (!IsOnField(position) || !this[position])
+            if (!this.IsOnField(position) || !this[position])
                 return false;
 
             this[position] = false;
@@ -103,42 +103,21 @@ namespace Battleship.Implementations
         {
             return EnumerateUnreadyShipCells(ship, start, vertical)
                 .All(position =>
-                    IsOnField(position) && !this[position] && canUseCell(position) &&
-                    !position.AllNeighbours.Any(x => IsOnField(x) && this[x]));
+                    this.IsOnField(position) && !this[position] && canUseCell(position) &&
+                    !position.AllNeighbours.Any(x => this.IsOnField(x) && this[x]));
         }
 
-        private bool HasConnectedByAngleShips(CellPosition position)
+        private bool HasConnectedByVertexShips(CellPosition position)
         {
-            return position.ByAngleNeighbours.Any(x => IsOnField(x) && this[x]);
+            return position.ByVertexNeighbours.Any(x => this.IsOnField(x) && this[x]);
         }
 
         private IEnumerable<ShipType> GetConnectedShips(CellPosition position)
         {
             return position.ByEdgeNeighbours
-                .Where(x => IsOnField(x) && this[x])
-                .Select(CountConnectedCells)
+                .Where(x => this.IsOnField(x) && this[x])
+                .Select(x => this.FindAllConnectedByEdgeCells(x, isShip => isShip).Count())
                 .Cast<ShipType>();
-        }
-
-        private int CountConnectedCells(CellPosition start)
-        {
-            var visited = new HashSet<CellPosition> {start};
-            var queue = new Queue<CellPosition>();
-            queue.Enqueue(start);
-
-            while (queue.Any())
-            {
-                var current = queue.Dequeue();
-                var ways = current.ByEdgeNeighbours
-                    .Where(x => IsOnField(x) && !visited.Contains(x) && this[x]);
-                foreach (var connected in ways)
-                {
-                    visited.Add(connected);
-                    queue.Enqueue(connected);
-                }
-            }
-
-            return visited.Count;
         }
 
         public IGameField Build()
@@ -147,7 +126,7 @@ namespace Battleship.Implementations
                 return null;
 
             var newField = new IGameCell[Size.Height, Size.Width];
-            foreach (var position in EnumeratePositions())
+            foreach (var position in this.EnumeratePositions())
             {
                 var row = position.Row;
                 var column = position.Column;
@@ -175,20 +154,13 @@ namespace Battleship.Implementations
 
         public void Clear()
         {
-            foreach (var position in EnumeratePositions())
+            foreach (var position in this.EnumeratePositions())
                 TryRemoveShipCell(position);
         }
 
         private IEnumerable<CellPosition> EnumerateReadyShipCells(CellPosition start)
         {
-            var nextToRight = start + CellPosition.DeltaRight;
-            var needToGoRight = IsOnField(nextToRight) && this[nextToRight];
-            
-            while (IsOnField(start) && this[start])
-            {
-                yield return start;
-                start += needToGoRight ? CellPosition.DeltaRight  : CellPosition.DeltaDown;
-            }
+            return this.FindAllConnectedByEdgeCells(start, isShip => isShip).OrderBy(x => x);
         }
 
         private static IEnumerable<CellPosition> EnumerateUnreadyShipCells(ShipType ship, CellPosition start, bool vertical)
@@ -197,15 +169,6 @@ namespace Battleship.Implementations
             for (var i = 0; i < ship.GetLength(); i++, start += delta)
                 yield return start;
         }
-
-        public bool IsOnField(CellPosition position)
-        {
-            return
-                position.Row.IsInRange(0, Size.Height) &&
-                position.Column.IsInRange(0, Size.Width);
-        }
-
-        public IEnumerable<CellPosition> EnumeratePositions() => field.EnumeratePositions();
 
         public bool this[CellPosition position] {
             get { return field[position.Row, position.Column]; }

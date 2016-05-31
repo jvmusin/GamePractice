@@ -53,7 +53,7 @@ namespace Battleship.Implementations
                     return ShotResult.Kill(target, affectedCells);
                 }
                 
-                return ShotResult.Hit(target, Damage(target.ByAngleNeighbours));
+                return ShotResult.Hit(target, Damage(target.ByVertexNeighbours));
             }
 
             return ShotResult.Miss(target);

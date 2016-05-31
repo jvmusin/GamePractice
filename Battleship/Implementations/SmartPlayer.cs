@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Battleship.Interfaces;
+using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
@@ -22,34 +23,35 @@ namespace Battleship.Implementations
         {
             get
             {
-//                if (!CanPredictionBeReal())
-                    GenerateNewPrediction();
+                GenerateNewPrediction();
                 if (!CanPredictionBeReal())
                     throw null;
 
                 var damagedShip = FindDamagedShip().ToList();
                 if (damagedShip.Any())
                 {
-                    var targets = damagedShip
+                    var target = damagedShip
                         .SelectMany(x => x.ByEdgeNeighbours)
                         .Where(x => OpponentFieldKnowledge.IsOnField(x))
                         .Where(x => prediction[x] is IShipCell && !OpponentFieldKnowledge[x].HasValue)
-                        .ToList();
-                    return targets[rnd.Next(targets.Count)];
+                        .OrderBy(x => rnd.Next())
+                        .First();
+                    return target;
                 }
                 else
                 {
-                    var targets = prediction.EnumeratePositions()
+                    var target = prediction.EnumeratePositions()
                         .Where(x => prediction[x] is IShipCell && !OpponentFieldKnowledge[x].HasValue)
-                        .ToList();
-                    return targets[rnd.Next(targets.Count)];
+                        .OrderBy(x => -((IShipCell)prediction[x]).Ship.Length )
+                        .ThenBy(x => rnd.Next())
+                        .First();
+                    return target;
                 }
             }
         }
 
         private void GenerateNewPrediction()
         {
-            prediction = null;
             var builder = new GameFieldBuilder();
             foreach (var position in OpponentFieldKnowledge.EnumeratePositions())
                 if (OpponentFieldKnowledge[position] == true)
@@ -114,33 +116,11 @@ namespace Battleship.Implementations
                     OpponentFieldKnowledge[position] == true &&
                     position.AllNeighbours.Any(neighbour =>
                         OpponentFieldKnowledge.IsOnField(neighbour) &&
-                        OpponentFieldKnowledge[neighbour] == null)).ToList();
-            if (!damagedShip.Any())
-                return damagedShip;
-            return FindAllConnectedCells(damagedShip.First());
-        }
-
-        private IEnumerable<CellPosition> FindAllConnectedCells(CellPosition start)
-        {
-            var visited = new HashSet<CellPosition> { start };
-            var queue = new Queue<CellPosition>();
-            queue.Enqueue(start);
-
-            while (queue.Any())
-            {
-                var current = queue.Dequeue();
-                var ways = current.ByEdgeNeighbours
-                    .Where(x =>
-                        OpponentFieldKnowledge.IsOnField(x) && !visited.Contains(x) &&
-                        OpponentFieldKnowledge[x] == true);
-                foreach (var connected in ways)
-                {
-                    visited.Add(connected);
-                    queue.Enqueue(connected);
-                }
-            }
-
-            return visited;
+                        OpponentFieldKnowledge[neighbour] == null))
+                .ToList();
+            return damagedShip.Any()
+                ? OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip.First(), knowledge => knowledge == true)
+                : damagedShip;
         }
 
         private bool CanPredictionBeReal()

@@ -68,6 +68,7 @@
     <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Implementations\Player.cs" />
+    <Compile Include="Utilities\RectangularReadonlyFieldExtensions.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />

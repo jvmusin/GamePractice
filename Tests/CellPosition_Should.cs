@@ -71,7 +71,7 @@ namespace Tests
                 new CellPosition(1, 1)
             };
 
-            cell.ByAngleNeighbours.Should().BeEquivalentTo(neighbours);
+            cell.ByVertexNeighbours.Should().BeEquivalentTo(neighbours);
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace Tests
                 new CellPosition(51, 101)
             };
 
-            cell.ByAngleNeighbours.Should().BeEquivalentTo(neighbours);
+            cell.ByVertexNeighbours.Should().BeEquivalentTo(neighbours);
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace Tests
                 new CellPosition(-49, -101)
             };
 
-            cell.ByAngleNeighbours.Should().BeEquivalentTo(neighbours);
+            cell.ByVertexNeighbours.Should().BeEquivalentTo(neighbours);
         }
 
         #endregion
