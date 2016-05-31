@@ -22,9 +22,9 @@ namespace Battleship.Utilities
             return field[position.Row, position.Column];
         }
 
-        public static void SetValue<T>(this T[,] field, T value, CellPosition position)
+        public static T SetValue<T>(this T[,] field, T value, CellPosition position)
         {
-            field[position.Row, position.Column] = value;
+            return field[position.Row, position.Column] = value;
         }
 
         public static IEnumerable<CellPosition> EnumeratePositions<T>(this T[,] field)

@@ -24,6 +24,14 @@ namespace Battleship.Utilities
                 cell.Row.IsInRange(0, field.Size.Height) &&
                 cell.Column.IsInRange(0, field.Size.Width);
         }
+        
+        public static IEnumerable<CellPosition> EnumeratePositions<T>(this IRectangularReadonlyField<T> field)
+        {
+            return
+                from row in Enumerable.Range(0, field.GetHeight())
+                from column in Enumerable.Range(0, field.GetWidth())
+                select new CellPosition(row, column);
+        }
 
         public static IEnumerable<CellPosition> FindAllConnectedByEdgeCells<T>(
             this IRectangularReadonlyField<T> field, CellPosition start, Predicate<T> canBeVisited)
@@ -45,14 +53,6 @@ namespace Battleship.Utilities
             }
 
             return visited;
-        }
-
-        public static IEnumerable<CellPosition> EnumeratePositions<T>(this IRectangularReadonlyField<T> field)
-        {
-            return
-                from row in Enumerable.Range(0, field.GetHeight())
-                from column in Enumerable.Range(0, field.GetWidth())
-                select new CellPosition(row, column);
         }
     }
 }

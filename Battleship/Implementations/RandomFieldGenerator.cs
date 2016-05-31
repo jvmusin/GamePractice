@@ -17,11 +17,6 @@ namespace Battleship.Implementations
             this.builder = builder;
         }
 
-        public IGameField Generate()
-        {
-            return Generate(x => true);
-        }
-
         public IGameField Generate(Predicate<CellPosition> canUseCell)
         {
             var allShips = builder.ShipsLeft.SelectMany(x => Enumerable.Repeat(x.Key, x.Value)).ToList();

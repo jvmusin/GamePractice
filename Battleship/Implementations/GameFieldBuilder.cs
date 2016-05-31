@@ -36,17 +36,15 @@ namespace Battleship.Implementations
             if (HasConnectedByVertexShips(position))
                 return false;
 
-            var connectedShips = GetConnectedShips(position).ToList();
+            var connectedShips = GetConnectedByEdgeShips(position).ToList();
             var newShipLength = connectedShips.Sum(type => type.GetLength()) + 1;
 
             if (!Enum.IsDefined(typeof (ShipType), newShipLength))
                 return false;
-
-            var newShip = (ShipType) newShipLength;
-
+            
             foreach (var destroyedShip in connectedShips)
                 shipsLeft[destroyedShip]++;
-            shipsLeft[newShip]--;
+            shipsLeft[(ShipType)newShipLength]--;
 
             this[position] = true;
             return true;
@@ -58,7 +56,7 @@ namespace Battleship.Implementations
                 return false;
 
             this[position] = false;
-            var connectedShips = GetConnectedShips(position).ToList();
+            var connectedShips = GetConnectedByEdgeShips(position).ToList();
 
             foreach (var ship in connectedShips)
                 shipsLeft[ship]--;
@@ -98,8 +96,8 @@ namespace Battleship.Implementations
             return CanBeAddedSafely(ship, start, vertical, x => true);
         }
 
-        public bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical,
-            Predicate<CellPosition> canUseCell)
+        public bool CanBeAddedSafely(
+            ShipType ship, CellPosition start, bool vertical, Predicate<CellPosition> canUseCell)
         {
             return EnumerateUnreadyShipCells(ship, start, vertical)
                 .All(position =>
@@ -112,7 +110,7 @@ namespace Battleship.Implementations
             return position.ByVertexNeighbours.Any(x => this.IsOnField(x) && this[x]);
         }
 
-        private IEnumerable<ShipType> GetConnectedShips(CellPosition position)
+        private IEnumerable<ShipType> GetConnectedByEdgeShips(CellPosition position)
         {
             return position.ByEdgeNeighbours
                 .Where(x => this.IsOnField(x) && this[x])

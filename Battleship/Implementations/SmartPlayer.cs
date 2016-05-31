@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Battleship.Interfaces;
 using Battleship.Utilities;
@@ -10,8 +9,6 @@ namespace Battleship.Implementations
     public class SmartPlayer : Player
     {
         private readonly Random rnd = new Random();
-
-        private Size FieldSize => OpponentFieldKnowledge.Size;
 
         public SmartPlayer(IGameField selfField) : base(selfField)
         {
@@ -27,26 +24,29 @@ namespace Battleship.Implementations
                 if (!CanPredictionBeReal())
                     throw null;
 
+                IOrderedEnumerable<CellPosition> targets;
                 var damagedShip = FindDamagedShip().ToList();
                 if (damagedShip.Any())
                 {
-                    var target = damagedShip
-                        .SelectMany(x => x.ByEdgeNeighbours)
+                    targets = damagedShip.SelectMany(x => x.ByEdgeNeighbours)
                         .Where(x => OpponentFieldKnowledge.IsOnField(x))
-                        .Where(x => prediction[x] is IShipCell && !OpponentFieldKnowledge[x].HasValue)
-                        .OrderBy(x => rnd.Next())
-                        .First();
-                    return target;
+                        .Where(x => prediction[x] is IShipCell)
+                        .Where(x => !OpponentFieldKnowledge[x].HasValue)
+                        .OrderBy(x => 0);
                 }
                 else
                 {
-                    var target = prediction.EnumeratePositions()
-                        .Where(x => prediction[x] is IShipCell && !OpponentFieldKnowledge[x].HasValue)
-                        .OrderBy(x => -((IShipCell)prediction[x]).Ship.Length )
-                        .ThenBy(x => rnd.Next())
-                        .First();
-                    return target;
+                    targets = prediction.EnumeratePositions()
+                        .Where(x => prediction[x] is IShipCell)
+                        .Where(x => !OpponentFieldKnowledge[x].HasValue)
+                        .OrderByDescending(x => ((IShipCell) prediction[x]).Ship.Length);
                 }
+
+                return targets
+                    .ThenByDescending(x => x.ByVertexNeighbours
+                        .Where(y => OpponentFieldKnowledge.IsOnField(y))
+                        .Count(y => OpponentFieldKnowledge[y] == null))
+                    .ThenBy(x => rnd.Next()).First();
             }
         }
 
@@ -87,7 +87,7 @@ namespace Battleship.Implementations
             if (builder.ShipsLeft[ship] == 0)
                 yield break;
 
-            var topLeftCell = GetTopLeftCell(damagedShip);
+            var topLeftCell = damagedShip.Min();
             var delta = vertical ? CellPosition.DeltaDown : CellPosition.DeltaRight;
 
             var start = vertical
@@ -102,11 +102,6 @@ namespace Battleship.Implementations
                     continue;
                 yield return Tuple.Create(ship, start, vertical);
             }
-        }
-
-        private CellPosition GetTopLeftCell(IEnumerable<CellPosition> cells)
-        {
-            return cells.Min(cell => Tuple.Create(cell.Row * FieldSize.Width + cell.Column, cell)).Item2;
         }
 
         private IEnumerable<CellPosition> FindDamagedShip()

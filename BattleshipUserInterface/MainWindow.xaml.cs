@@ -80,24 +80,28 @@ namespace BattleshipUserInterface
 
             SetUpFieldSize(field);
 
-            for (var row = 0; row < fieldSize.Height; row++)
-                for (var column = 0; column < fieldSize.Width; column++)
-                {
-                    var cell = result[row, column] = DefaultGridCell;
-                    cell.Fill = opponentField
-                        ? OpponentFieldUnknownCellColor
-                        : SelfFieldUndamagedEmptyCellColor;
-                    field.Children.Add(cell);
-                    Grid.SetRow(cell, row);
-                    Grid.SetColumn(cell, column);
+            foreach (var position in result.EnumeratePositions())
+            {
+                var cell = result.SetValue(DefaultGridCell, position);
+                cell.Fill = opponentField
+                    ? OpponentFieldUnknownCellColor
+                    : SelfFieldUndamagedEmptyCellColor;
+                AddElementOnField(field, cell, position);
 
-                    if (opponentField)
-                        AddTurnOnClick(cell, row, column);
-                    else
-                        AddEditShipOnClick(cell, row, column);
-                }
+                if (opponentField)
+                    AddTurnOnClick(cell, position);
+                else
+                    AddEditShipOnClick(cell, position);
+            }
 
             return result;
+        }
+
+        private static void AddElementOnField(Panel field, UIElement element, CellPosition position)
+        {
+            field.Children.Add(element);
+            Grid.SetRow(element, position.Row);
+            Grid.SetColumn(element, position.Column);
         }
 
         private static Rectangle DefaultGridCell => new Rectangle
@@ -119,14 +123,14 @@ namespace BattleshipUserInterface
         }
 
         private Thread opponentThread;
-        private void AddTurnOnClick(UIElement element, int row, int column)
+        private void AddTurnOnClick(UIElement element, CellPosition position)
         {
             element.MouseLeftButtonUp += (sender, args) =>
             {
                 if ((opponentThread != null && opponentThread.IsAlive) || controller.GameFinished)
                     return;
 
-                controller.Shoot(new CellPosition(row, column));
+                controller.Shoot(position);
                 UpdateGameFields();
                 if (controller.GameFinished)
                 {
@@ -152,13 +156,13 @@ namespace BattleshipUserInterface
             };
         }
 
-        private void AddEditShipOnClick(Shape cell, int row, int column)
+        private void AddEditShipOnClick(Shape cell, CellPosition position)
         {
             cell.MouseLeftButtonUp += (sender, args) =>
             {
                 if (builder == null)
                     return;
-                if (builder.TryAddShipCell(new CellPosition(row, column)))
+                if (builder.TryAddShipCell(position))
                     cell.Fill = SelfFieldUndamagedShipCellColor;
                 UpdateShipsLeftCount();
             };
@@ -167,7 +171,7 @@ namespace BattleshipUserInterface
             {
                 if (builder == null)
                     return;
-                if (builder.TryRemoveShipCell(new CellPosition(row, column)))
+                if (builder.TryRemoveShipCell(position))
                     cell.Fill = SelfFieldUndamagedEmptyCellColor;
                 UpdateShipsLeftCount();
             };
@@ -201,7 +205,7 @@ namespace BattleshipUserInterface
         private static void ColorCells<T>(Rectangle[,] cells, IRectangularReadonlyField<T> field, Func<T, Brush> getBrush)
         {
             foreach (var position in field.EnumeratePositions())
-                cells[position.Row, position.Column].Fill = getBrush(field[position]);
+                cells.GetValue(position).Fill = getBrush(field[position]);
         }
 
         private void StartGameHandle(object sender, RoutedEventArgs e)
@@ -232,6 +236,7 @@ namespace BattleshipUserInterface
         private void GenerateRandomFieldHandle(object sender, MouseButtonEventArgs e)
         {
             builder = container.Get<IGameFieldBuilder>();
+            //TODO Make with Ninject
             new RandomFieldGenerator(builder).Generate();
             FillSelfFieldUsingBuilder();
             UpdateShipsLeftCount();
@@ -338,7 +343,7 @@ namespace BattleshipUserInterface
 
             kernel.Bind<IGameFieldBuilder>().To<GameFieldBuilder>();
             kernel.Bind<IRandomFieldGenerator>().To<RandomFieldGenerator>();
-            kernel.Bind<IGameField>().ToMethod(context => context.Kernel.Get<IRandomFieldGenerator>().Generate());
+            kernel.Bind<IGameField>().ToMethod(context => kernel.Get<IRandomFieldGenerator>().Generate());
             kernel.Bind<IPlayer>().To<SmartPlayer>();
             kernel.Bind<IGameController>().To<GameController>();
 

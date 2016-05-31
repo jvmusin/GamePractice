@@ -50,8 +50,6 @@ namespace Battleship.Implementations
             }
         }
 
-        public static GameRules EmptyField => new GameRules(new Size(10, 10), new Dictionary<ShipType, int>());
-
         private bool EqualsShipsCount(IReadOnlyDictionary<ShipType, int> other)
         {
             return ShipsCount.Keys.All(k => ShipsCount[k] == other[k]);

@@ -21,15 +21,9 @@ namespace Battleship.Implementations
             Rules = rules;
             survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
             field = new IGameCell[Size.Height, Size.Width];
-            FillField(getCell);
+            field.Fill(getCell);
         }
-
-        private void FillField(Func<CellPosition, IGameCell> getCell)
-        {
-            foreach (var position in this.EnumeratePositions())
-                this[position] = getCell(position);
-        }
-
+        
         public ShotResult Shoot(CellPosition target)
         {
             if (!IsOnField(target))
@@ -75,13 +69,7 @@ namespace Battleship.Implementations
                 cell.Column.IsInRange(0, Size.Width);
         }
 
-        public IEnumerable<CellPosition> EnumeratePositions() => field.EnumeratePositions();
-
-        public IGameCell this[CellPosition position]
-        {
-            get { return field[position.Row, position.Column]; }
-            private set { field[position.Row, position.Column] = value; }
-        }
+        public IGameCell this[CellPosition position] => field.GetValue(position);
 
         #region ToString, Equals and GetHashCode
 
