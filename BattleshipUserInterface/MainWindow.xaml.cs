@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -244,11 +243,10 @@ namespace BattleshipUserInterface
 
         private void FillSelfFieldUsingBuilder()
         {
-            foreach (var row in Enumerable.Range(0, builder.Size.Height))
-                foreach (var column in Enumerable.Range(0, builder.Size.Width))
-                    selfFieldCells[row, column].Fill = builder[new CellPosition(row, column)]
-                        ? SelfFieldUndamagedShipCellColor
-                        : SelfFieldUndamagedEmptyCellColor;
+            foreach (var position in builder.EnumeratePositions())
+                selfFieldCells.GetValue(position).Fill = builder[position]
+                    ? SelfFieldUndamagedShipCellColor
+                    : SelfFieldUndamagedEmptyCellColor;
         }
 
         private IEnumerable<UIElement> BuilderElements => new UIElement[]

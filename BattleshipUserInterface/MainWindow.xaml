@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:BattleshipUserInterface"
         mc:Ignorable="d"
-        Title="Морской бой" Height="570" Width="850" Background="{x:Static local:MainWindow.BackgroundColor}">
+        Title="Морской бой" Height="570" Width="850" ResizeMode="NoResize" Background="{x:Static local:MainWindow.BackgroundColor}">
 
     <StackPanel Orientation="Vertical" Margin="10, 15, 10, 10">
 
