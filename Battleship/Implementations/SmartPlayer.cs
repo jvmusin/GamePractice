@@ -116,7 +116,7 @@ namespace Battleship.Implementations
                 .ToList();
             return damagedShip.Any()
                 ? OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip.First(), knowledge => knowledge == true)
-                : damagedShip;
+                : Enumerable.Empty<CellPosition>();
         }
 
         private bool CanPredictionBeReal(IGameField prediction)
