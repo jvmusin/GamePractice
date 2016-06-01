@@ -13,15 +13,14 @@ namespace Battleship.Implementations
         public SmartPlayer(IGameField selfField) : base(selfField)
         {
         }
-
-        private IGameField prediction;
+        
 
         public override CellPosition NextTarget
         {
             get
             {
-                GenerateNewPrediction();
-                if (!CanPredictionBeReal())
+                var prediction = GenerateNewPrediction();
+                if (!CanPredictionBeReal(prediction))
                     throw null;
 
                 IOrderedEnumerable<CellPosition> targets;
@@ -50,7 +49,7 @@ namespace Battleship.Implementations
             }
         }
 
-        private void GenerateNewPrediction()
+        private IGameField GenerateNewPrediction()
         {
             var builder = new GameFieldBuilder();
             foreach (var position in OpponentFieldKnowledge.EnumeratePositions())
@@ -73,12 +72,13 @@ namespace Battleship.Implementations
                 foreach (var variant in variants)
                 {
                     builder.TryAddFullShip(variant.Item1, variant.Item2, variant.Item3);
-                    if ((prediction = generator.Generate(x => OpponentFieldKnowledge[x] != false)) != null)
-                        break;
+                    var prediction = generator.Generate(x => OpponentFieldKnowledge[x] != false);
+                    if (prediction != null)
+                        return prediction;
                     builder.TryRemoveFullShip(variant.Item1, variant.Item2, variant.Item3);
                 }
             }
-            else prediction = generator.Generate(x => OpponentFieldKnowledge[x] != false);
+            return generator.Generate(x => OpponentFieldKnowledge[x] != false);
         }
 
         private IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
@@ -112,13 +112,14 @@ namespace Battleship.Implementations
                     position.AllNeighbours.Any(neighbour =>
                         OpponentFieldKnowledge.IsOnField(neighbour) &&
                         OpponentFieldKnowledge[neighbour] == null))
+                .Take(1)
                 .ToList();
             return damagedShip.Any()
                 ? OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip.First(), knowledge => knowledge == true)
                 : damagedShip;
         }
 
-        private bool CanPredictionBeReal()
+        private bool CanPredictionBeReal(IGameField prediction)
         {
             if (prediction == null)
                 return false;
