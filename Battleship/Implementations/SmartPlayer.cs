@@ -112,8 +112,7 @@ namespace Battleship.Implementations
                     position.AllNeighbours.Any(neighbour =>
                         OpponentFieldKnowledge.IsOnField(neighbour) &&
                         OpponentFieldKnowledge[neighbour] == null))
-                .Take(1)
-                .ToList();
+                .Take(1).ToList();
             return damagedShip.Any()
                 ? OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip.First(), knowledge => knowledge == true)
                 : Enumerable.Empty<CellPosition>();
