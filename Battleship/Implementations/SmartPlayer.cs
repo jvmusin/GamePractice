@@ -107,15 +107,14 @@ namespace Battleship.Implementations
         private IEnumerable<CellPosition> FindDamagedShip()
         {
             var damagedShip = OpponentFieldKnowledge.EnumeratePositions()
-                .Where(position =>
+                .FirstOrDefault(position =>
                     OpponentFieldKnowledge[position] == true &&
                     position.AllNeighbours.Any(neighbour =>
                         OpponentFieldKnowledge.IsOnField(neighbour) &&
-                        OpponentFieldKnowledge[neighbour] == null))
-                .Take(1).ToList();
-            return damagedShip.Any()
-                ? OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip.First(), knowledge => knowledge == true)
-                : Enumerable.Empty<CellPosition>();
+                        OpponentFieldKnowledge[neighbour] == null));
+            return damagedShip == null
+                ? Enumerable.Empty<CellPosition>()
+                : OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip, knowledge => knowledge == true);
         }
 
         private bool CanPredictionBeReal(IGameField prediction)
