@@ -24,13 +24,6 @@ namespace Battleship.Utilities
                 select new CellPosition(row, column);
         }
 
-        public static T GetSafe<T>(this IRectangularReadonlyField<T> field, CellPosition position)
-        {
-            return field.Contains(position)
-                ? field[position]
-                : default(T);
-        }
-
         public static IEnumerable<CellPosition> FindAllConnectedByEdgeCells<T>(
             this IRectangularReadonlyField<T> field, CellPosition start, Predicate<T> canBeVisited)
         {
