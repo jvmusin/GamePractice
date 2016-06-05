@@ -14,7 +14,7 @@ namespace Battleship.Implementations
         {
             get
             {
-                var targets = Enumerable.Range(0, 100).Select(i => base.NextTarget);
+                var targets = Enumerable.Range(0, 50).Select(i => base.NextTarget);
                 return targets.GroupBy(x => x, (position, positions) => Tuple.Create(positions.Count(), position))
                     .Max().Item2;
 
