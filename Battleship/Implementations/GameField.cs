@@ -26,7 +26,7 @@ namespace Battleship.Implementations
         
         public ShotResult Shoot(CellPosition target)
         {
-            if (!IsOnField(target))
+            if (!this.Contains(target))
                 return null;
 
             var currentCell = this[target];
@@ -55,18 +55,11 @@ namespace Battleship.Implementations
 
         private IEnumerable<CellPosition> Damage(IEnumerable<CellPosition> targets)
         {
-            foreach (var neighbour in targets.Where(pos => IsOnField(pos) && !this[pos].Damaged))
+            foreach (var neighbour in targets.Where(pos => this.Contains(pos) && !this[pos].Damaged))
             {
                 this[neighbour].Damaged = true;
                 yield return neighbour;
             }
-        }
-
-        public bool IsOnField(CellPosition cell)
-        {
-            return
-                cell.Row.IsInRange(0, Size.Height) &&
-                cell.Column.IsInRange(0, Size.Width);
         }
 
         public IGameCell this[CellPosition position] => field.GetValue(position);
@@ -75,17 +68,12 @@ namespace Battleship.Implementations
 
         public override string ToString()
         {
-            var table = Enumerable.Range(0, Size.Height).Select(row => new char[Size.Width]).ToArray();
-            foreach (var position in this.EnumeratePositions())
+            return this.ToString(x =>
             {
-                var cell = this[position];
-                char symbol;
-                if (cell is IShipCell)
-                    symbol = cell.Damaged ? 'X' : 'O';
-                else symbol = cell.Damaged ? '♥' : '.';
-                table[position.Row][position.Column] = symbol;
-            }
-            return string.Join("\n", table.Select((x, i) => new string(x)));
+                if (x is IShipCell)
+                    return x.Damaged ? 'X' : 'O';
+                return x.Damaged ? '♥' : '.';
+            });
         }
 
         protected bool Equals(IGameField other)

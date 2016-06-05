@@ -83,41 +83,41 @@ namespace Tests
 
         #endregion
 
-        #region IsOnField method tests
+        #region Contains method tests
 
         [Test]
         public void ReturnTrue_IfPositionIsInsideTheField()
         {
             var position = new CellPosition(4, 5);
-            field.IsOnField(position).Should().BeTrue();
+            field.Contains(position).Should().BeTrue();
         }
 
         [Test]
         public void ReturnFalse_IfPositionIsOutsideTheField()
         {
             var position = new CellPosition(50, 9);
-            field.IsOnField(position).Should().BeFalse();
+            field.Contains(position).Should().BeFalse();
         }
 
         [Test]
         public void ReturnTrue_IfPositionIsOnTheBorder()
         {
             var position = new CellPosition(9, 9);
-            field.IsOnField(position).Should().BeTrue();
+            field.Contains(position).Should().BeTrue();
         }
 
         [Test]
         public void ReturnFalse_IfPositionIsAtTheOuterAngle()
         {
             var position = new CellPosition(10, 10);
-            field.IsOnField(position).Should().BeFalse();
+            field.Contains(position).Should().BeFalse();
         }
 
         [Test]
         public void ReturnFalse_IfPositionHasNegativeCoordinates()
         {
             var position = new CellPosition(-1, 5);
-            field.IsOnField(position).Should().BeFalse();
+            field.Contains(position).Should().BeFalse();
         }
 
         #endregion

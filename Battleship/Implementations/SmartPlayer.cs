@@ -8,8 +8,6 @@ namespace Battleship.Implementations
 {
     public class SmartPlayer : Player
     {
-        private readonly Random rnd = new Random();
-
         public SmartPlayer(IGameField selfField) : base(selfField)
         {
         }
@@ -27,28 +25,29 @@ namespace Battleship.Implementations
                 if (damagedShip.Any())
                 {
                     targets = damagedShip.SelectMany(x => x.ByEdgeNeighbours)
-                        .Where(x => OpponentFieldKnowledge.IsOnField(x))
-                        .Where(x => prediction[x] is IShipCell)
-                        .Where(x => !OpponentFieldKnowledge[x].HasValue)
+                        .Where(x => IsGoodTarget(x, prediction))
                         .OrderBy(x => 0);
                 }
                 else
                 {
                     targets = prediction.EnumeratePositions()
-                        .Where(x => prediction[x] is IShipCell)
-                        .Where(x => !OpponentFieldKnowledge[x].HasValue)
+                        .Where(x => IsGoodTarget(x, prediction))
                         .OrderByDescending(x => ((IShipCell) prediction[x]).Ship.Length);
                 }
 
-                return targets
-//                    .ThenByDescending(x => x.ByVertexNeighbours
-//                        .Where(y => OpponentFieldKnowledge.IsOnField(y))
-//                        .Count(y => OpponentFieldKnowledge[y] == null))
-                    .ThenBy(x => rnd.Next()).First();
+                return targets.ThenShuffle().First();
             }
         }
 
-        private IGameField GenerateNewPrediction()
+        protected bool IsGoodTarget(CellPosition target, IGameField prediction)
+        {
+            return
+                OpponentFieldKnowledge.Contains(target) &&
+                prediction[target] is IShipCell &&
+                !OpponentFieldKnowledge[target].HasValue;
+        }
+
+        protected IGameField GenerateNewPrediction()
         {
             var builder = new GameFieldBuilder();
             foreach (var position in OpponentFieldKnowledge.EnumeratePositions())
@@ -80,7 +79,7 @@ namespace Battleship.Implementations
             return generator.Generate(x => OpponentFieldKnowledge[x] != false);
         }
 
-        private IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
+        protected IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
             IList<CellPosition> damagedShip, IGameFieldBuilder builder, bool vertical, ShipType ship)
         {
             if (builder.ShipsLeft[ship] == 0)
@@ -92,7 +91,7 @@ namespace Battleship.Implementations
             var start = vertical
                 ? new CellPosition(0, topLeftCell.Column)
                 : new CellPosition(topLeftCell.Row, 0);
-            for (; builder.IsOnField(start); start += delta)
+            for (; builder.Contains(start); start += delta)
             {
                 if (!builder.CanBeAddedSafely(ship, start, vertical, x => OpponentFieldKnowledge[x] != false))
                     continue;
@@ -103,20 +102,20 @@ namespace Battleship.Implementations
             }
         }
 
-        private IEnumerable<CellPosition> FindDamagedShip()
+        protected IEnumerable<CellPosition> FindDamagedShip()
         {
             var damagedShip = OpponentFieldKnowledge.EnumeratePositions()
                 .FirstOrDefault(position =>
                     OpponentFieldKnowledge[position] == true &&
                     position.AllNeighbours.Any(neighbour =>
-                        OpponentFieldKnowledge.IsOnField(neighbour) &&
+                        OpponentFieldKnowledge.Contains(neighbour) &&
                         OpponentFieldKnowledge[neighbour] == null));
             return damagedShip == null
                 ? Enumerable.Empty<CellPosition>()
                 : OpponentFieldKnowledge.FindAllConnectedByEdgeCells(damagedShip, knowledge => knowledge == true);
         }
 
-        private bool CanPredictionBeReal(IGameField prediction)
+        protected bool CanPredictionBeReal(IGameField prediction)
         {
             if (prediction == null)
                 return false;

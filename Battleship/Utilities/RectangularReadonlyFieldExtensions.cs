@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Battleship.Implementations;
 using Battleship.Interfaces;
@@ -8,17 +9,7 @@ namespace Battleship.Utilities
 {
     public static class RectangularReadonlyFieldExtensions
     {
-        public static int GetHeight<T>(this IRectangularReadonlyField<T> field)
-        {
-            return field.Size.Height;
-        }
-
-        public static int GetWidth<T>(this IRectangularReadonlyField<T> field)
-        {
-            return field.Size.Width;
-        }
-
-        public static bool IsOnField<T>(this IRectangularReadonlyField<T> field, CellPosition cell)
+        public static bool Contains<T>(this IRectangularReadonlyField<T> field, CellPosition cell)
         {
             return
                 cell.Row.IsInRange(0, field.Size.Height) &&
@@ -28,9 +19,16 @@ namespace Battleship.Utilities
         public static IEnumerable<CellPosition> EnumeratePositions<T>(this IRectangularReadonlyField<T> field)
         {
             return
-                from row in Enumerable.Range(0, field.GetHeight())
-                from column in Enumerable.Range(0, field.GetWidth())
+                from row in Enumerable.Range(0, field.Size.Height)
+                from column in Enumerable.Range(0, field.Size.Width)
                 select new CellPosition(row, column);
+        }
+
+        public static T GetSafe<T>(this IRectangularReadonlyField<T> field, CellPosition position)
+        {
+            return field.Contains(position)
+                ? field[position]
+                : default(T);
         }
 
         public static IEnumerable<CellPosition> FindAllConnectedByEdgeCells<T>(
@@ -44,7 +42,7 @@ namespace Battleship.Utilities
             {
                 var current = queue.Dequeue();
                 var ways = current.ByEdgeNeighbours
-                    .Where(x => field.IsOnField(x) && !visited.Contains(x) && canBeVisited(field[x]));
+                    .Where(x => field.Contains(x) && !visited.Contains(x) && canBeVisited(field[x]));
                 foreach (var connected in ways)
                 {
                     visited.Add(connected);
@@ -53,6 +51,16 @@ namespace Battleship.Utilities
             }
 
             return visited;
+        }
+
+        public static string ToString<T>(this IRectangularReadonlyField<T> field, Func<T, char> getSymbol)
+        {
+            var rows = Enumerable.Range(0, field.Size.Height)
+                .Select(x => new char[field.Size.Width])
+                .ToArray();
+            foreach (var position in field.EnumeratePositions())
+                rows[position.Row][position.Column] = getSymbol(field[position]);
+            return string.Join("\n", rows.Select(row => new string(row)));
         }
     }
 }

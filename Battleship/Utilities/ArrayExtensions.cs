@@ -22,7 +22,7 @@ namespace Battleship.Utilities
             return field[position.Row, position.Column];
         }
 
-        public static T SetValue<T>(this T[,] field, T value, CellPosition position)
+        public static T SetValue<T>(this T[,] field, CellPosition position, T value)
         {
             return field[position.Row, position.Column] = value;
         }
@@ -30,27 +30,25 @@ namespace Battleship.Utilities
         public static IEnumerable<CellPosition> EnumeratePositions<T>(this T[,] field)
         {
             return
-                from row in Enumerable.Range(0, field.GetLength(0))
-                from column in Enumerable.Range(0, field.GetLength(1))
+                from row in Enumerable.Range(0, field.GetHeight())
+                from column in Enumerable.Range(0, field.GetWidth())
                 select new CellPosition(row, column);
-        }
-
-        public static void Fill<T>(this T[,] field, T value)
-        {
-            field.Fill(x => value);
         }
 
         public static void Fill<T>(this T[,] field, Func<CellPosition, T> getValue)
         {
             foreach (var position in field.EnumeratePositions())
-                field.SetValue(getValue(position), position);
+                field.SetValue(position, getValue(position));
         }
 
-        public static bool Contains<T>(this T[,] field, CellPosition cell)
+        public static string ToString<T>(this T[,] field, Func<T, char> getSymbol)
         {
-            return
-                cell.Row.IsInRange(0, field.GetHeight()) &&
-                cell.Column.IsInRange(0, field.GetWidth());
+            var resultField = Enumerable.Range(0, field.GetHeight())
+                .Select(x => new char[field.GetWidth()])
+                .ToArray();
+            foreach (var position in field.EnumeratePositions())
+                resultField[position.Row][position.Column] = getSymbol(field.GetValue(position));
+            return string.Join("\n", resultField.Select(row => new string(row)));
         }
     }
 }

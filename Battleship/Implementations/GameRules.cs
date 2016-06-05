@@ -24,7 +24,7 @@ namespace Battleship.Implementations
 
         private static IReadOnlyDictionary<ShipType, int> AddMissingTypes(IReadOnlyDictionary<ShipType, int> counter)
         {
-            var missedTypes = Enum.GetValues(typeof (ShipType))
+            var missedTypes = Enum.GetValues(typeof(ShipType))
                 .Cast<ShipType>()
                 .Where(shipType => !counter.ContainsKey(shipType))
                 .ToList();
@@ -43,7 +43,7 @@ namespace Battleship.Implementations
             get
             {
                 var fieldSize = new Size(10, 10);
-                var shipsCount = Enum.GetValues(typeof (ShipType))
+                var shipsCount = Enum.GetValues(typeof(ShipType))
                     .Cast<ShipType>()
                     .ToDictionary(x => x, x => 5 - x.GetLength());
                 return new GameRules(fieldSize, shipsCount);
@@ -69,11 +69,6 @@ namespace Battleship.Implementations
         }
 
         public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (FieldSize.GetHashCode()*397) ^ (ShipsCount?.GetHashCode() ?? 0);
-            }
-        }
+            => FieldSize.GetHashCode();
     }
 }

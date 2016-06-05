@@ -7,7 +7,7 @@ namespace Battleship.Implementations
 {
     public class CellPosition : IComparable<CellPosition>, IComparable
     {
-        private static readonly Random rnd = new Random();
+        private static readonly Random random = new Random();
 
         public static readonly CellPosition DeltaRight = new CellPosition(0, 1);
         public static readonly CellPosition DeltaDown = new CellPosition(1, 0);
@@ -37,8 +37,8 @@ namespace Battleship.Implementations
 
         public static CellPosition Random(Size size)
         {
-            var row = rnd.Next(size.Height);
-            var column = rnd.Next(size.Width);
+            var row = random.Next(size.Height);
+            var column = random.Next(size.Width);
             return new CellPosition(row, column);
         }
 

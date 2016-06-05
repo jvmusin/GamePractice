@@ -11,33 +11,8 @@ namespace Battleship.Implementations
         }
 
         public override CellPosition NextTarget
-        {
-            get
-            {
-                var targets = Enumerable.Range(0, 50).Select(i => base.NextTarget);
-                return targets.GroupBy(x => x, (position, positions) => Tuple.Create(positions.Count(), position))
-                    .Max().Item2;
-
-
-//                var targetsCounter = new Dictionary<CellPosition, int>();
-//                foreach (var target in Enumerable.Range(0, 100).Select(i => base.NextTarget))
-//                {
-//                    if (!targetsCounter.ContainsKey(target))
-//                        targetsCounter[target] = 0;
-//                    targetsCounter[target]++;
-//                }
-//                return targetsCounter.Max(x => Tuple.Create(x.Value, x.Key)).Item2;
-//
-//                return Enumerable.Range(0, 100).Select(i => base.NextTarget)
-//                    .GroupBy(x => x, (position, positions) =>
-//                    {
-//                        var cellPositions = positions.ToList();
-//                        cellPositions.Add(position);
-//                        return cellPositions;
-//                    })
-//                    .OrderBy(x => x.Count)
-//                    .First().First();
-            }
-        }
+            => Enumerable.Range(0, 50).Select(i => base.NextTarget)
+                .GroupBy(x => x, (pos, list) => Tuple.Create(list.Count(), pos))
+                .Max().Item2;
     }
 }

@@ -22,7 +22,7 @@ namespace Battleship.Implementations
             AffectedCells = affectedCells.ToList();
         }
 
-        public static ShotResult Miss(CellPosition target) 
+        public static ShotResult Miss(CellPosition target)
             => new ShotResult(target, ShotType.Miss, null);
 
         public static ShotResult Hit(CellPosition target, IEnumerable<CellPosition> affectedCells)

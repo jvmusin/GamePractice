@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
-    <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
     <Compile Include="Implementations\SmartestPlayer.cs" />
@@ -69,6 +68,7 @@
     <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Implementations\Player.cs" />
+    <Compile Include="Utilities\EnumerableExtensions.cs" />
     <Compile Include="Utilities\RectangularReadonlyFieldExtensions.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />

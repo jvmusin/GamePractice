@@ -81,7 +81,7 @@ namespace BattleshipUserInterface
 
             foreach (var position in result.EnumeratePositions())
             {
-                var cell = result.SetValue(DefaultGridCell, position);
+                var cell = result.SetValue(position, DefaultGridCell);
                 cell.Fill = opponentField
                     ? OpponentFieldUnknownCellColor
                     : SelfFieldUndamagedEmptyCellColor;

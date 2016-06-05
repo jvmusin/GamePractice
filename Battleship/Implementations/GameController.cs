@@ -38,7 +38,7 @@ namespace Battleship.Implementations
             GameFinished = false;
             FirstPlayerTurns = true;
         }
-        
+
         public ShotResult Shoot(CellPosition target)
         {
             if (GameFinished)

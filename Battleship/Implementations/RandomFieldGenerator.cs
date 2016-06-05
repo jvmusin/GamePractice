@@ -39,7 +39,7 @@ namespace Battleship.Implementations
                     new {Position = position, Vertical = false}
                 })
                 .Where(x => builder.CanBeAddedSafely(ship, x.Position, x.Vertical, canUseCell))
-                .OrderBy(x => rnd.Next()).ToList();
+                .Shuffle();
 
             foreach (var place in availablePlaces)
             {
