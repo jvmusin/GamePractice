@@ -52,6 +52,7 @@
     <Compile Include="Implementations\CellType.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
+    <Compile Include="Implementations\SmartestPlayer.cs" />
     <Compile Include="Implementations\SmartPlayer.cs" />
     <Compile Include="Interfaces\IRandomFieldGenerator.cs" />
     <Compile Include="Implementations\RandomFieldGenerator.cs" />

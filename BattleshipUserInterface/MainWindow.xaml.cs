@@ -144,7 +144,7 @@ namespace BattleshipUserInterface
                     {
                         var opponentTarget = controller.CurrentPlayer.NextTarget;
                         controller.Shoot(opponentTarget);
-                        Thread.Sleep(300);
+                        Thread.Sleep(200);
                         element.Dispatcher.Invoke(UpdateGameFields);
                     }
                     UpdateCurrentPlayerStatus();
@@ -342,7 +342,7 @@ namespace BattleshipUserInterface
             kernel.Bind<IGameFieldBuilder>().To<GameFieldBuilder>();
             kernel.Bind<IRandomFieldGenerator>().To<RandomFieldGenerator>();
             kernel.Bind<IGameField>().ToMethod(context => kernel.Get<IRandomFieldGenerator>().Generate());
-            kernel.Bind<IPlayer>().To<SmartPlayer>();
+            kernel.Bind<IPlayer>().To<SmartestPlayer>();
             kernel.Bind<IGameController>().To<GameController>();
 
             return kernel;

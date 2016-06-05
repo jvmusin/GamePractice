@@ -13,7 +13,6 @@ namespace Battleship.Implementations
         public SmartPlayer(IGameField selfField) : base(selfField)
         {
         }
-        
 
         public override CellPosition NextTarget
         {
@@ -62,7 +61,7 @@ namespace Battleship.Implementations
             {
                 foreach (var cell in damagedShip)
                     builder.TryRemoveShipCell(cell);
-                
+
                 var variants = new[] {4, 3, 2, 1}.SelectMany(x => new[]
                 {
                     new {Ship = (ShipType) x, Vertical = true},
