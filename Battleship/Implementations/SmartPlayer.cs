@@ -41,9 +41,9 @@ namespace Battleship.Implementations
                 }
 
                 return targets
-                    .ThenByDescending(x => x.ByVertexNeighbours
-                        .Where(y => OpponentFieldKnowledge.IsOnField(y))
-                        .Count(y => OpponentFieldKnowledge[y] == null))
+//                    .ThenByDescending(x => x.ByVertexNeighbours
+//                        .Where(y => OpponentFieldKnowledge.IsOnField(y))
+//                        .Count(y => OpponentFieldKnowledge[y] == null))
                     .ThenBy(x => rnd.Next()).First();
             }
         }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Battleship.Implementations
 {
-    public class CellPosition : IComparable<CellPosition>
+    public class CellPosition : IComparable<CellPosition>, IComparable
     {
         private static readonly Random rnd = new Random();
 
@@ -57,6 +57,12 @@ namespace Battleship.Implementations
             var cmp = Row.CompareTo(other.Row);
             if (cmp == 0) cmp = Column.CompareTo(other.Column);
             return cmp;
+        }
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as CellPosition;
+            return other == null ? 0 : CompareTo(other);
         }
 
         protected bool Equals(CellPosition other)
