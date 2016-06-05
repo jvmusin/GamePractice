@@ -80,12 +80,12 @@ namespace Battleship.Implementations
         }
 
         protected IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
-            IList<CellPosition> damagedShip, IGameFieldBuilder builder, bool vertical, ShipType ship)
+            IList<CellPosition> damagedShipCells, IGameFieldBuilder builder, bool vertical, ShipType ship)
         {
             if (builder.ShipsLeft[ship] == 0)
                 yield break;
 
-            var topLeftCell = damagedShip.Min();
+            var topLeftCell = damagedShipCells.Min();
             var delta = vertical ? CellPosition.DeltaDown : CellPosition.DeltaRight;
 
             var start = vertical
@@ -96,7 +96,7 @@ namespace Battleship.Implementations
                 if (!builder.CanBeAddedSafely(ship, start, vertical, x => OpponentFieldKnowledge[x] != false))
                     continue;
                 var newShipCells = Enumerable.Range(0, ship.GetLength()).Select(x => start + delta*x).ToList();
-                if (damagedShip.Any(x => !newShipCells.Contains(x)))
+                if (damagedShipCells.Any(x => !newShipCells.Contains(x)))
                     continue;
                 yield return Tuple.Create(ship, start, vertical);
             }

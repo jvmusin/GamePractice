@@ -1,6 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Battleship.Interfaces;
+using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
@@ -11,8 +11,24 @@ namespace Battleship.Implementations
         }
 
         public override CellPosition NextTarget
-            => Enumerable.Range(0, 50).Select(i => base.NextTarget)
-                .GroupBy(x => x, (pos, list) => Tuple.Create(list.Count(), pos))
-                .Max().Item2;
+        {
+            get
+            {
+                var predictionsCounter = new int[OpponentFieldKnowledge.Size.Height, OpponentFieldKnowledge.Size.Width];
+
+                var predictions = Enumerable.Range(0, 100).Select(x => GenerateNewPrediction());
+                foreach (var prediction in predictions)
+                    foreach (var target in prediction.EnumeratePositions())
+                        if (prediction[target] is IShipCell)
+                            predictionsCounter[target.Row, target.Column]++;
+
+                var damagedShip = FindDamagedShip().ToList();
+
+                return predictionsCounter.EnumeratePositions()
+                    .OrderByDescending(x => predictionsCounter.GetValue(x))
+                    .First(x => !OpponentFieldKnowledge[x].HasValue &&
+                                (!damagedShip.Any() || damagedShip.Any(y => y.ByEdgeNeighbours.Contains(x))));
+            }
+        }
     }
 }

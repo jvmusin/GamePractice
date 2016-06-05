@@ -8,8 +8,6 @@ namespace Battleship.Implementations
 {
     public class RandomFieldGenerator : IRandomFieldGenerator
     {
-        private readonly Random rnd = new Random();
-
         private readonly IGameFieldBuilder builder;
 
         public RandomFieldGenerator(IGameFieldBuilder builder)
