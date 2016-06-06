@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class GameFieldBuilder : IGameFieldBuilder
+    public class GameFieldBuilder : RectangularFieldBase<bool>, IGameFieldBuilder
     {
         public GameRules Rules { get; }
-        public Size Size => Rules.FieldSize;
-
-        private readonly bool[,] field;
+        
         private readonly Dictionary<ShipType, int> shipsLeft;
 
         public IReadOnlyDictionary<ShipType, int> ShipsLeft => shipsLeft;
 
-        public GameFieldBuilder(GameRules rules)
+        public GameFieldBuilder(GameRules rules) : base(rules.FieldSize)
         {
             Rules = rules;
-            field = new bool[Size.Height, Size.Width];
             shipsLeft = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
         }
 
@@ -161,12 +157,6 @@ namespace Battleship.Implementations
             var delta = vertical ? CellPosition.DeltaDown : CellPosition.DeltaRight;
             for (var i = 0; i < ship.GetLength(); i++, start += delta)
                 yield return start;
-        }
-
-        public bool this[CellPosition position]
-        {
-            get { return field[position.Row, position.Column]; }
-            private set { field[position.Row, position.Column] = value; }
         }
     }
 }
