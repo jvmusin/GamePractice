@@ -76,6 +76,9 @@ namespace Battleship.Implementations
 
         private bool TryEditFullShip(ShipType ship, CellPosition start, bool vertical, bool add)
         {
+            if (!IsFreeAround(ship, start, vertical))
+                return false;
+
             var changeState = add ? (Func<CellPosition, bool>) TryAddShipCell : TryRemoveShipCell;
             var returnState = add ? (Func<CellPosition, bool>) TryRemoveShipCell : TryAddShipCell;
             var cells = EnumerateUnreadyShipCells(ship, start, vertical).ToList();
@@ -87,6 +90,15 @@ namespace Battleship.Implementations
                     return false;
                 }
             return true;
+        }
+
+        private bool IsFreeAround(ShipType ship, CellPosition start, bool vertical)
+        {
+            var shipCells = EnumerateUnreadyShipCells(ship, start, vertical).ToList();
+            return shipCells.SelectMany(x => x.AllNeighbours)
+                .Where(this.Contains)
+                .Where(x => !shipCells.Contains(x))
+                .All(x => !this[x]);
         }
 
         public bool CanBeAddedSafely(ShipType ship, CellPosition start, bool vertical)
@@ -157,8 +169,8 @@ namespace Battleship.Implementations
             ShipType ship, CellPosition start, bool vertical)
         {
             var delta = vertical ? CellPosition.DeltaDown : CellPosition.DeltaRight;
-            for (var i = 0; i < ship.GetLength(); i++, start += delta)
-                yield return start;
+            for (var i = 0; i < ship.GetLength(); i++)
+                yield return start + delta*i;
         }
     }
 }

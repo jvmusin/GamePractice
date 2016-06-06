@@ -11,6 +11,8 @@ namespace Battleship.Base
 
         public static readonly CellPosition DeltaRight = new CellPosition(0, 1);
         public static readonly CellPosition DeltaDown = new CellPosition(1, 0);
+        public static readonly CellPosition DeltaLeft = new CellPosition(0, -1);
+        public static readonly CellPosition DeltaUp = new CellPosition(-1, 0);
 
         public int Row { get; }
         public int Column { get; }
