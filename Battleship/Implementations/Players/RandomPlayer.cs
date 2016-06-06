@@ -3,7 +3,7 @@ using Battleship.Base;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
-namespace Battleship.Implementations
+namespace Battleship.Implementations.Players
 {
     public class RandomPlayer : PlayerBase
     {

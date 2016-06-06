@@ -372,7 +372,7 @@ namespace Tests
 
         #endregion
 
-        #region Indexator tests
+        #region Indexer tests
 
         [Test]
         public void ContainAnEmtyField_AfterCreation()

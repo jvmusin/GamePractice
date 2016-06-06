@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Battleship.Base;
+using Battleship.Implementations.GameCells;
 using Battleship.Interfaces;
 
 namespace Battleship.Implementations

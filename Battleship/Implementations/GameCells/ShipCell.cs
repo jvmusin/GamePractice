@@ -2,7 +2,7 @@
 using Battleship.Base;
 using Battleship.Interfaces;
 
-namespace Battleship.Implementations
+namespace Battleship.Implementations.GameCells
 {
     public class ShipCell : GameCellBase, IShipCell
     {

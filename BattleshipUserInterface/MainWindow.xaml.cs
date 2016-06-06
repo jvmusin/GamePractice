@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Battleship.Base;
 using Battleship.Implementations;
+using Battleship.Implementations.GameCells;
+using Battleship.Implementations.Players;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 using Ninject;
