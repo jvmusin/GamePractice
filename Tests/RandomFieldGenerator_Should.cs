@@ -88,6 +88,13 @@ namespace Tests
             generating.ShouldThrow<Exception>();
         }
 
+        [Test]
+        public void FailCreating_WhenBuilderIsNull()
+        {
+            Action creating = () => new RandomFieldGenerator(null);
+            creating.ShouldThrow<Exception>();
+        }
+
         #region Builder generating
 
         private static readonly string[] SampleField =

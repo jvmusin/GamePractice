@@ -7,6 +7,36 @@ namespace Tests
     [TestFixture]
     public class CellPosition_Should
     {
+        #region Base tests
+
+        [Test]
+        public void ReturnRealEdgesLength()
+        {
+            var row = 1234;
+            var column = 12342;
+
+            var position = new CellPosition(row, column);
+
+            position.Row.Should().Be(row);
+            position.Column.Should().Be(column);
+        }
+
+        [Test]
+        public void CompareRight()
+        {
+            var pos1 = new CellPosition(54, 2);
+            var pos2 = new CellPosition(4, 200);
+            var pos3 = new CellPosition(54, 2);
+
+            pos1.Should().BeGreaterThan(pos2);
+            pos2.Should().BeLessThan(pos1);
+
+            pos3.Should().BeGreaterOrEqualTo(pos1);
+            pos1.Should().BeGreaterOrEqualTo(pos3);
+        }
+
+        #endregion
+
         #region All neighbours tests
 
         [Test]
@@ -56,10 +86,10 @@ namespace Tests
 
         #endregion
 
-        #region By angle neighbours tests
+        #region By vertex neighbours tests
 
         [Test]
-        public void ReturnByAngleNeighboursCorrectry_WhenRequestedZeroCell()
+        public void ReturnByVertexNeighboursCorrectry_WhenRequestedZeroCell()
         {
             var cell = new CellPosition(0, 0);
 
@@ -75,7 +105,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReturnByAngleNeighboursCorrectry_WhenCoordinatesArePositive()
+        public void ReturnByVertexNeighboursCorrectry_WhenCoordinatesArePositive()
         {
             var cell = new CellPosition(50, 100);
 
@@ -91,7 +121,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReturnByAngleNeighboursCorrectry_WhenCoordinatesAreNegative()
+        public void ReturnByVertexNeighboursCorrectry_WhenCoordinatesAreNegative()
         {
             var cell = new CellPosition(-50, -100);
 
