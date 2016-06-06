@@ -69,13 +69,13 @@
     <Compile Include="Implementations\GameFieldBuilder.cs" />
     <Compile Include="Interfaces\IShipCell.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
-    <Compile Include="Implementations\Player.cs" />
+    <Compile Include="Base\PlayerBase.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
     <Compile Include="Utilities\RectangularReadonlyFieldExtensions.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\IntExtensions.cs" />
     <Compile Include="Interfaces\IShip.cs" />
-    <Compile Include="Implementations\CellPosition.cs" />
+    <Compile Include="Base\CellPosition.cs" />
     <Compile Include="Interfaces\IGameCell.cs" />
     <Compile Include="Interfaces\IGameField.cs" />
     <Compile Include="Interfaces\IRectangularReadonlyField.cs" />

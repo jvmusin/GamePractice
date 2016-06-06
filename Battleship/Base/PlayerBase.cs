@@ -1,13 +1,14 @@
-﻿using Battleship.Interfaces;
+﻿using Battleship.Implementations;
+using Battleship.Interfaces;
 
-namespace Battleship.Implementations
+namespace Battleship.Base
 {
-    public abstract class Player : IPlayer
+    public abstract class PlayerBase : IPlayer
     {
         public IGameField SelfField { get; }
         public IGameFieldKnowledge OpponentFieldKnowledge { get; }
         
-        protected Player(IGameField selfField)
+        protected PlayerBase(IGameField selfField)
         {
             SelfField = selfField;
             OpponentFieldKnowledge = new GameFieldKnowledge(SelfField.Size);

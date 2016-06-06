@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Battleship.Base;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class SmartPlayer : Player
+    public class SmartPlayer : PlayerBase
     {
         public SmartPlayer(IGameField selfField) : base(selfField)
         {
@@ -39,7 +40,7 @@ namespace Battleship.Implementations
             }
         }
 
-        protected bool IsGoodTarget(CellPosition target, IGameField prediction)
+        private bool IsGoodTarget(CellPosition target, IGameField prediction)
         {
             return
                 OpponentFieldKnowledge.Contains(target) &&
@@ -79,7 +80,7 @@ namespace Battleship.Implementations
             return generator.Generate(x => OpponentFieldKnowledge[x] != false);
         }
 
-        protected IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
+        private IEnumerable<Tuple<ShipType, CellPosition, bool>> GenerateContinuesForDamagedShip(
             IList<CellPosition> damagedShipCells, IGameFieldBuilder builder, bool vertical, ShipType ship)
         {
             if (builder.ShipsLeft[ship] == 0)

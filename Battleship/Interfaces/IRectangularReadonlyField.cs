@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Battleship.Base;
 using Battleship.Implementations;
 
 namespace Battleship.Interfaces

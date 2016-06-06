@@ -1,16 +1,15 @@
 ﻿using System.Drawing;
-using Battleship.Implementations;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
 namespace Battleship.Base
 {
-    public class RectangularFieldBase<T> : IRectangularReadonlyField<T>
+    public abstract class RectangularFieldBase<T> : IRectangularReadonlyField<T>
     {
         protected readonly T[,] Field;
         public Size Size { get; }
 
-        public RectangularFieldBase(Size size)
+        protected RectangularFieldBase(Size size)
         {
             Size = size;
             Field = new T[size.Height, size.Width];

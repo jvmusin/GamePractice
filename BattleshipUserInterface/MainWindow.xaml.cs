@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Battleship.Base;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Battleship.Utilities;

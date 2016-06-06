@@ -1,17 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using Battleship.Base;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class RandomPlayer : Player
+    public class RandomPlayer : PlayerBase
     {
         public RandomPlayer(IGameField selfField) : base(selfField)
         {
         }
-
-        private readonly Random rnd = new Random();
 
         public override CellPosition NextTarget
             => OpponentFieldKnowledge.EnumeratePositions()

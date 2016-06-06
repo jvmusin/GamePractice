@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Battleship.Base;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Battleship.Utilities;

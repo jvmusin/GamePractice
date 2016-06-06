@@ -1,4 +1,5 @@
-﻿using Battleship.Implementations;
+﻿using Battleship.Base;
+using Battleship.Implementations;
 using FluentAssertions;
 using NUnit.Framework;
 

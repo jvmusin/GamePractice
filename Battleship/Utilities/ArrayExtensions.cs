@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Battleship.Base;
 using Battleship.Implementations;
 
 namespace Battleship.Utilities
@@ -39,16 +40,6 @@ namespace Battleship.Utilities
         {
             foreach (var position in field.EnumeratePositions())
                 field.SetValue(position, getValue(position));
-        }
-
-        public static string ToString<T>(this T[,] field, Func<T, char> getSymbol)
-        {
-            var resultField = Enumerable.Range(0, field.GetHeight())
-                .Select(x => new char[field.GetWidth()])
-                .ToArray();
-            foreach (var position in field.EnumeratePositions())
-                resultField[position.Row][position.Column] = getSymbol(field.GetValue(position));
-            return string.Join("\n", resultField.Select(row => new string(row)));
         }
     }
 }

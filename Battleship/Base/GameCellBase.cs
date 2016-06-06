@@ -1,15 +1,14 @@
 ﻿using System;
-using Battleship.Implementations;
 using Battleship.Interfaces;
 
 namespace Battleship.Base
 {
-    public class GameCellBase : IGameCell
+    public abstract class GameCellBase : IGameCell
     {
         public CellPosition Position { get; }
         public bool Damaged { get; set; }
 
-        public GameCellBase(CellPosition position, bool damaged)
+        protected GameCellBase(CellPosition position, bool damaged)
         {
             if (position == null)
                 throw new ArgumentNullException(nameof(position));

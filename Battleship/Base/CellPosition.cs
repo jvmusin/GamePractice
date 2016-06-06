@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace Battleship.Implementations
+namespace Battleship.Base
 {
     public class CellPosition : IComparable<CellPosition>, IComparable
     {
@@ -11,8 +11,6 @@ namespace Battleship.Implementations
 
         public static readonly CellPosition DeltaRight = new CellPosition(0, 1);
         public static readonly CellPosition DeltaDown = new CellPosition(1, 0);
-
-        public CellPosition Reversed => new CellPosition(-Row, -Column);
 
         public int Row { get; }
         public int Column { get; }
