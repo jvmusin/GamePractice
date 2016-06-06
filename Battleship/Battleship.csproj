@@ -47,11 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\GameCellBase.cs" />
     <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\EmptyCell.cs" />
     <Compile Include="Implementations\GameRules.cs" />
-    <Compile Include="Implementations\RectangularFieldBase.cs" />
+    <Compile Include="Base\RectangularFieldBase.cs" />
     <Compile Include="Implementations\SmartestPlayer.cs" />
     <Compile Include="Implementations\SmartPlayer.cs" />
     <Compile Include="Interfaces\IRandomFieldGenerator.cs" />

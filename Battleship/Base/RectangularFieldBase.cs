@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
+using Battleship.Implementations;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
-namespace Battleship.Implementations
+namespace Battleship.Base
 {
     public class RectangularFieldBase<T> : IRectangularReadonlyField<T>
     {
