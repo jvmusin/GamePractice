@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellPosition_Should.cs" />
+    <Compile Include="GameController_Should.cs" />
     <Compile Include="GameFieldBuilder_Should.cs" />
     <Compile Include="RandomFieldGenerator_Should.cs" />
     <Compile Include="GameField_Should.cs" />
