@@ -7,10 +7,11 @@ namespace Battleship.Implementations
     public class RectangularFieldBase<T> : IRectangularReadonlyField<T>
     {
         protected readonly T[,] Field;
-        public Size Size => new Size(Field.GetHeight(), Field.GetWidth());
+        public Size Size { get; }
 
         public RectangularFieldBase(Size size)
         {
+            Size = size;
             Field = new T[size.Height, size.Width];
         }
 
