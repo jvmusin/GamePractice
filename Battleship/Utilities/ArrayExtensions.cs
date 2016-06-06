@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Battleship.Base;
-using Battleship.Implementations;
 
 namespace Battleship.Utilities
 {
