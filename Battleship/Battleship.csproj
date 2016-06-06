@@ -51,7 +51,7 @@
     <Compile Include="Implementations\GameFieldKnowledge.cs" />
     <Compile Include="Implementations\GameField.cs" />
     <Compile Include="Implementations\GameCells\EmptyCell.cs" />
-    <Compile Include="Implementations\GameRules.cs" />
+    <Compile Include="Base\GameRules.cs" />
     <Compile Include="Base\RectangularFieldBase.cs" />
     <Compile Include="Implementations\Players\SmartestPlayer.cs" />
     <Compile Include="Implementations\Players\SmartPlayer.cs" />

@@ -13,11 +13,14 @@ namespace Battleship.Implementations
 
         public RandomFieldGenerator(IGameFieldBuilder builder)
         {
-            this.builder = builder;
+            if ((this.builder = builder) == null)
+                throw new ArgumentNullException(nameof(builder));
         }
 
         public IGameField Generate(Predicate<CellPosition> canUseCell)
         {
+            if (!IsBuilderCorrect())
+                throw new InvalidOperationException("Builder contains incorrect ships");
             var allShips = builder.ShipsLeft.SelectMany(x => Enumerable.Repeat(x.Key, x.Value)).ToList();
             TryAddAllShips(allShips, canUseCell);
             return builder.Build();
@@ -51,5 +54,7 @@ namespace Battleship.Implementations
             ships.Add(ship);
             return false;
         }
+
+        private bool IsBuilderCorrect() => builder.ShipsLeft.Values.All(x => x >= 0);
     }
 }

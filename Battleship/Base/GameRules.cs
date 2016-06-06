@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Battleship.Implementations;
 
-namespace Battleship.Implementations
+namespace Battleship.Base
 {
     public class GameRules
     {
@@ -16,7 +17,7 @@ namespace Battleship.Implementations
                 throw new ArgumentNullException(nameof(shipsCount));
 
             if (fieldSize.Height < 1 || fieldSize.Width < 1)
-                throw new ArgumentOutOfRangeException(nameof(fieldSize));
+                throw new ArgumentOutOfRangeException(nameof(fieldSize), fieldSize, "Field borders should have positive length");
 
             FieldSize = fieldSize;
             ShipsCount = AddMissingTypes(shipsCount);

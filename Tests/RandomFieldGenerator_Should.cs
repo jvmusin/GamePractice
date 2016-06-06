@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Battleship.Base;
 using Battleship.Implementations;
 using Battleship.Interfaces;
 using Battleship.Utilities;
+using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -74,6 +77,15 @@ namespace Tests
             var field = generator.Generate();
             foreach (var position in field.EnumeratePositions())
                 builder[position].Should().Be(field[position] is IShipCell);
+        }
+
+        [Test]
+        public void FailGenerating_WhenBuilderIsIncorrect()
+        {
+            var builder = A.Fake<IGameFieldBuilder>();
+            A.CallTo(() => builder.ShipsLeft).Returns(new Dictionary<ShipType, int> {{ShipType.Battleship, -1}});
+            Action generating = () => new RandomFieldGenerator(builder).Generate();
+            generating.ShouldThrow<Exception>();
         }
 
         #region Builder generating
