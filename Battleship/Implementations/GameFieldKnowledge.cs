@@ -4,24 +4,19 @@ using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class GameFieldKnowledge : IGameFieldKnowledge
+    public class GameFieldKnowledge : RectangularFieldBase<bool?>, IGameFieldKnowledge
     {
-        public Size Size { get; }
-        private readonly bool?[,] field;
-
-        public GameFieldKnowledge(Size size)
+        public GameFieldKnowledge(Size size) : base(size)
         {
-            Size = size;
-            field = new bool?[Size.Height, Size.Width];
-        }
-
-        public bool? this[CellPosition position]
-        {
-            get { return field[position.Row, position.Column]; }
-            set { field[position.Row, position.Column] = value; }
         }
 
         public override string ToString()
             => this.ToString(x => x == null ? '.' : (x.Value ? 'X' : '♥'));
+
+        public new bool? this[CellPosition position]
+        {
+            get { return base[position]; }
+            set { base[position] = value; }
+        }
     }
 }

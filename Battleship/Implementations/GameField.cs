@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Battleship.Interfaces;
 using Battleship.Utilities;
 
 namespace Battleship.Implementations
 {
-    public class GameField : IGameField
+    public class GameField : RectangularFieldBase<IGameCell>, IGameField
     {
         public GameRules Rules { get; }
-        public Size Size => Rules.FieldSize;
         public IReadOnlyDictionary<ShipType, int> SurvivedShips => survivedShips;
-
-        private readonly IGameCell[,] field;
+        
         private readonly Dictionary<ShipType, int> survivedShips;
 
-        internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell)
+        internal GameField(GameRules rules, Func<CellPosition, IGameCell> getCell) : base(rules.FieldSize)
         {
             Rules = rules;
             survivedShips = rules.ShipsCount.ToDictionary(x => x.Key, x => x.Value);
-            field = new IGameCell[Size.Height, Size.Width];
-            field.Fill(getCell);
+            Field.Fill(getCell);
         }
         
         public ShotResult Shoot(CellPosition target)
@@ -34,9 +30,10 @@ namespace Battleship.Implementations
                 return null;
             this[target].Damaged = true;
 
-            if (currentCell is IShipCell)
+            var cell = currentCell as IShipCell;
+            if (cell != null)
             {
-                var currentShip = ((IShipCell) currentCell).Ship;
+                var currentShip = cell.Ship;
 
                 if (currentShip.Killed)
                 {
@@ -61,8 +58,6 @@ namespace Battleship.Implementations
                 yield return neighbour;
             }
         }
-
-        public IGameCell this[CellPosition position] => field.GetValue(position);
 
         #region ToString, Equals and GetHashCode
 
