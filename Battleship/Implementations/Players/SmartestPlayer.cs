@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Battleship.Base;
 using Battleship.Interfaces;
 using Battleship.Utilities;
@@ -17,8 +18,10 @@ namespace Battleship.Implementations.Players
             {
                 var predictionsCounter = new int[OpponentFieldKnowledge.Size.Height, OpponentFieldKnowledge.Size.Width];
 
+                var timer = new Stopwatch();
+                timer.Start();
                 var predictions = Enumerable.Range(0, 100).Select(x => GenerateNewPrediction());
-                foreach (var prediction in predictions)
+                foreach (var prediction in predictions.TakeWhile(x => timer.ElapsedMilliseconds < 100))
                     foreach (var target in prediction.EnumeratePositions())
                         if (prediction[target] is IShipCell)
                             predictionsCounter[target.Row, target.Column]++;
