@@ -111,16 +111,17 @@ namespace BattleshipUserInterface
             Margin = new Thickness(1),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
-            MinWidth = 50,
-            MinHeight = 50
+            MinWidth = 30,
+            MinHeight = 30,
+//            Stretch = Stretch.Fill
         };
 
         private static void SetUpFieldSize(Grid field)
         {
             for (var i = 0; i < 10; i++)
             {
-                field.RowDefinitions.Add(new RowDefinition { MinHeight = 10, Height = new GridLength(30) });
-                field.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 10, Width = new GridLength(30) });
+                field.RowDefinitions.Add(new RowDefinition());
+                field.ColumnDefinitions.Add(new ColumnDefinition());
             }
         }
 
